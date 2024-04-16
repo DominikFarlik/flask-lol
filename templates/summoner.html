@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summoner</title>
+</head>
+<body>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('summoner') }}">Summoner</a>
+    <a href="{{ url_for('ranked') }}">Ranked</a>
+    <h1>Riot API Data</h1>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <p>Summoner Name: {{ summoner_name }}</p>
+        <p>Summoner Level: {{ summoner_data.summonerLevel }}</p>
+        <p>Summoner ID: {{ summoner_data.id }}</p>
+    {% endif %}
+</body>
+</html>

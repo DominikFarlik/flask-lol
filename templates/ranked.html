@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranked</title>
+</head>
+<body>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('summoner') }}">Summoner</a>
+    <a href="{{ url_for('ranked') }}">Ranked</a>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <h1>SoloQ:</h1>
+        <p>{{ soloq_data.leagueId }}</p>
+        <p>{{ soloq_data.summonerId }}</p>
+        <p>{{ soloq_data.queueType }}</p>
+        <p>{{ soloq_data.tier }}</p>
+        <p>{{ soloq_data.rank }}</p>
+        <p>{{ soloq_data.leaguePoints }}</p>
+        <p>{{ soloq_data.wins }}</p>
+    {% endif %}
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <h1>Flex:</h1>
+        <p>{{ flex_data.leagueId }}</p>
+        <p>{{ flex_data.summonerId }}</p>
+        <p>{{ flex_data.queueType }}</p>
+        <p>{{ flex_data.tier }}</p>
+        <p>{{ flex_data.rank }}</p>
+        <p>{{ flex_data.leaguePoints }}</p>
+        <p>{{ flex_data.wins }}</p>
+    {% endif %}
+</body>
+</html>

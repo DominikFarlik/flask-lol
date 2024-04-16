@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>challenger</title>
+</head>
+<body>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('summoner') }}">Summoner</a>
+    <a href="{{ url_for('ranked') }}">Ranked</a>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <h1>SoloQ:</h1>
+        <p>{{ data }}</p>
+    {% endif %}
+</body>
+</html>
