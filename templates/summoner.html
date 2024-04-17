@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summoner</title>
+    <title>Profile</title>
 </head>
 <body>
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('summoner') }}">Summoner</a>
-    <a href="{{ url_for('ranked') }}">Ranked</a>
-    <h1>Riot API Data</h1>
+    <a href="{{ url_for('challenger') }}">Challenger</a>
+    <h1>{{ summoner_name }}</h1>
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-        <p>Summoner Name: {{ summoner_name }}</p>
-        <p>Summoner Level: {{ summoner_data.summonerLevel }}</p>
-        <p>Summoner ID: {{ summoner_data.id }}</p>
+        <img src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(player_data.profileIconId)) }}">
+        <p>Summoner Level: {{ player_data.summonerLevel }}</p>
     {% endif %}
 </body>
 </html>

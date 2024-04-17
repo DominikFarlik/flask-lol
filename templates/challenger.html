@@ -8,12 +8,18 @@
 <body>
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('summoner') }}">Summoner</a>
-    <a href="{{ url_for('ranked') }}">Ranked</a>
+    <a href="{{ url_for('challenger') }}">Challenger</a>
+
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-        <h1>SoloQ:</h1>
-        <p>{{ data }}</p>
+    <h1>SoloQ:</h1>
+    {% for i in data %}
+        <p>{{ i.leaguePoints }} LP</p>
+        <p>{{ i.wins }} wins</p>
+        <p>{{ i.loses }} loses</p>
+    {% endfor %}
     {% endif %}
+
 </body>
 </html>
