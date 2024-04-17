@@ -1,7 +1,7 @@
 import requests
 from flask import render_template
 
-API_KEY = "RGAPI-bdc4ed7a-df65-408f-a12b-73e5aa23303e"
+API_KEY = "RGAPI-fcdbcccb-02a6-4a5c-898a-d134d3940bab"
 
 HEADERS = {"X-Riot-Token": API_KEY}
 

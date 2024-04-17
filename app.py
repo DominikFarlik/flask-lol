@@ -25,7 +25,7 @@ def summoner():
         else:
             ranked_data = get_api_data(endpoint)
             return render_template('summoner.html', player_data=player_data, summoner_name=summoner_name,
-                                   soloq_data=ranked_data[0], flex_data=ranked_data[1])
+                                   soloq_data=ranked_data[1], flex_data=ranked_data[0])
 
 
 @app.route('/challenger')

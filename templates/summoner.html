@@ -6,38 +6,34 @@
     <title>Profile</title>
 </head>
 <body>
-    <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('summoner') }}">Summoner</a>
-    <a href="{{ url_for('challenger') }}">Challenger</a>
-    <h1>{{ summoner_name }}</h1>
-    {% if error %}
+    <div>
+        <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('summoner') }}">Summoner</a>
+        <a href="{{ url_for('challenger') }}">Challenger</a>
+    </div>
+    <div>
+        {% if error %}
         <p>{{ error }}</p>
-    {% else %}
-        <img src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(player_data.profileIconId)) }}">
-        <p>Summoner Level: {{ player_data.summonerLevel }}</p>
-    {% endif %}
+        {% else %}
+        <img style="width: 50px; height: 50px" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(player_data.profileIconId)) }}">
+        <span>Level: {{ player_data.summonerLevel }}</span>
+        {% endif %}
+        <span>{{ summoner_name }}</span>
+    </div>
+
 
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-        <img src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(soloq_data.tier)) }}">
+        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(soloq_data.tier)) }}">
         <h1>{{ soloq_data.queueType }}</h1>
         <p>{{ soloq_data.tier }} {{ soloq_data.rank }} {{ soloq_data.leaguePoints }} LP </p>
-        <p>{{ soloq_data.wins }} wins</p>
-        <p>{{ soloq_data.losses }} losses</p>
-        <p>{{ soloq_data.veteran }} veteran</p>
-        <p>{{ soloq_data.inactive }} inactive</p>
-        <p>{{ soloq_data.freshBlood }} freshBlood</p>
-        <p>{{ soloq_data.hotStreak }} hotStreak</p>
+        <p>{{ soloq_data.wins }} W  {{ soloq_data.losses }} L</p>
 
+        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(flex_data.tier)) }}">
         <h1>{{ flex_data.queueType }}</h1>
         <p>{{ flex_data.tier }} {{ flex_data.rank }} {{ flex_data.leaguePoints }} LP </p>
-        <p>{{ flex_data.wins }} wins</p>
-        <p>{{ flex_data.losses }} losses</p>
-        <p>{{ flex_data.veteran }} veteran</p>
-        <p>{{ flex_data.inactive }} inactive</p>
-        <p>{{ flex_data.freshBlood }} freshBlood</p>
-        <p>{{ flex_data.hotStreak }} hotStreak</p>
+        <p>{{ flex_data.wins }} W {{ flex_data.losses }} L</p>
     {% endif %}
 </body>
 </html>
