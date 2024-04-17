@@ -18,19 +18,14 @@ def summoner():
     if error(endpoint):
         return render_template('summoner.html', error=get_api_data(endpoint))
     else:
-        endpoint = f"/lol/league/v4/entries/by-summoner/{encryptedSummonerId}"
-
         player_data = get_api_data(endpoint)
-        return render_template('summoner.html', player_data=player_data, summoner_name=summoner_name)
-
-
-
-    if error(endpoint):
-        return render_template('ranked.html', error=get_api_data(endpoint))
-    else:
-        data = get_api_data(endpoint)
-        print(data)
-        return render_template('ranked.html', soloq_data=data[0], flex_data=data[1])
+        endpoint = f"/lol/league/v4/entries/by-summoner/{encryptedSummonerId}"
+        if error(endpoint):
+            return render_template('summoner.html', error=get_api_data(endpoint))
+        else:
+            ranked_data = get_api_data(endpoint)
+            return render_template('summoner.html', player_data=player_data, summoner_name=summoner_name,
+                                   soloq_data=ranked_data[0], flex_data=ranked_data[1])
 
 
 @app.route('/challenger')
