@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from functions import error, get_api_data, get_name_by_puuid
+from functions import error, get_api_data, get_name_by_puuid, get_puuid_by_id, change_id_to_name, load_challengers
 
 app = Flask(__name__)
 
@@ -29,7 +29,7 @@ def summoner():
 
 
 @app.route('/challenger')
-def challenger():
+async def challenger():
     queue = "RANKED_SOLO_5x5"
     endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
 
@@ -37,7 +37,10 @@ def challenger():
         return render_template('challenger.html', error=get_api_data(endpoint))
     else:
         data = get_api_data(endpoint)
-        return render_template('challenger.html', data=data['entries'])
+        data = data['entries']
+        data = sorted(data, key=lambda x: -x['leaguePoints'])
+        #data = change_id_to_name(data)
+        return render_template('challenger.html', data=data)
 
 
 if __name__ == '__main__':

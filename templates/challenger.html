@@ -13,11 +13,11 @@
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-    <h1>SoloQ:</h1>
+    <h1>SoloQ challenger leaderboard:</h1>
     {% for i in data %}
+        <span>{{ i.playerName }}</span>
         <p>{{ i.leaguePoints }} LP</p>
-        <p>{{ i.wins }} wins</p>
-        <p>{{ i.loses }} loses</p>
+        <p>{{ i.wins }} W {{ i.losses }} L</p>
     {% endfor %}
     {% endif %}
 
