@@ -5,24 +5,44 @@
         {% if error %}
         <p>{{ error }}</p>
         {% else %}
-        <img style="width: 50px; height: 50px" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(player_data.profileIconId)) }}">
-        <span>Level: {{ player_data.summonerLevel }}</span>
+            <div class="vertical-container">
+                <div class="horizontal-container">
+                    <span>{{ player_data.summonerLevel }}</span>
+                    <img style="width: 50px; height: 50px" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(player_data.profileIconId)) }}">
+                </div>
+                <div>
+                    <span>{{ summoner_name }}</span>
+                </div>
+            </div>
         {% endif %}
-        <span>{{ summoner_name }}</span>
+
+    </div>
+    <div class="vertical-container">
+        <div class="horizontal-container">
+            {% if error %}
+                <p>{{ error }}</p>
+            {% else %}
+            {% if soloq_data %}
+                <div class="rank-container">
+                    <span>Ranked Solo</span>
+                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(soloq_data.tier)) }}">
+                    <span>{{ soloq_data.tier }} {{ soloq_data.rank }} {{ soloq_data.leaguePoints }} LP </span>
+                    <span>{{ soloq_data.wins }} W  {{ soloq_data.losses }} L {{ solo_winrate }} % Win rate</span>
+                </div>
+            {% endif %}
+            {% if flex_data %}
+                <div class="rank-container">
+                    <span>Ranked Flex</span>
+                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(flex_data.tier)) }}">
+                    <span>{{ flex_data.tier }} {{ flex_data.rank }} {{ flex_data.leaguePoints }} LP </span>
+                    <span>{{ flex_data.wins }} W {{ flex_data.losses }} L {{ flex_winrate }} % Win rate</span>
+                </div>
+            {% endif %}
+        {% endif %}
+        </div>
+        <div class="match-history">
+            <div class="horizontal-container">d</div>
+        </div>
     </div>
 
-
-    {% if error %}
-        <p>{{ error }}</p>
-    {% else %}
-        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(soloq_data.tier)) }}">
-        <h1>{{ soloq_data.queueType }}</h1>
-        <p>{{ soloq_data.tier }} {{ soloq_data.rank }} {{ soloq_data.leaguePoints }} LP </p>
-        <p>{{ soloq_data.wins }} W  {{ soloq_data.losses }} L</p>
-
-        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(flex_data.tier)) }}">
-        <h1>{{ flex_data.queueType }}</h1>
-        <p>{{ flex_data.tier }} {{ flex_data.rank }} {{ flex_data.leaguePoints }} LP </p>
-        <p>{{ flex_data.wins }} W {{ flex_data.losses }} L</p>
-    {% endif %}
 {% endblock %}

@@ -10,6 +10,11 @@
     font-family: "Playfair Display", serif;
 }
 
+body {
+    background-color: #5e0404;
+    color: white;
+}
+
 .navbar {
     display: flex;
     flex-direction: row;
@@ -72,4 +77,36 @@
 .search_button:hover {
   background-color: #bb0505;
     color: white;
+}
+
+/*summoner.html*/
+.horizontal-container {
+    display: flex;
+    flex-direction: column;
+    border: 5px solid #3a0000;
+    border-radius: 5px;
+}
+
+.vertical-container {
+    display: flex;
+    flex-direction: row;
+    border: 5px solid #3a0000;
+    border-radius: 5px;
+}
+
+.rank-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+}
+
+.match-history {
+    display: flex;
+    flex-direction: column;
+    flex: 0.8;
+    align-items: flex-start;
+    border: 5px solid #3a0000;
+    padding: 20px;
+    border-radius: 5px;
 }
