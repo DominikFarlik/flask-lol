@@ -1,14 +1,13 @@
 import requests
 import json
 
-API_KEY = "RGAPI-fcdbcccb-02a6-4a5c-898a-d134d3940bab"
+API_KEY = "RGAPI-abe5b2fa-ee3c-46f4-b515-732827d4c186"
 
 HEADERS = {"X-Riot-Token": API_KEY}
 
 EUN1_URL = "https://eun1.api.riotgames.com"
 
 EUROPE_CLUSTER_URL = "https://europe.api.riotgames.com"
-
 
 def get_api_data(endpoint):
     url = EUN1_URL + endpoint
@@ -58,26 +57,11 @@ def get_puuid_by_id(encryptedSummonerId):
         error_message = f"Error: {response.status_code}"
         return error_message
 
+def load_puuids_to_file_from_ids(data):
+    chall_puuids = []
+    for i in data:
+        chall_puuids.append(get_puuid_by_id(i['summonerId']))
 
-def change_id_to_name(data):
-    puuids = []
-    names = []
-    for i in range(len(data)):
-        puuids.append(get_puuid_by_id(data[i]['summonerId']))
-        names.append(get_name_by_puuid(puuids[i]))
-        data[i]['playerName'] = names[i]
-        print(data[i]['playerName'])
-    return data
-
-
-def load_challengers(starting_number):
-    players = []
-    queue = "RANKED_SOLO_5x5"
-    endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
-    if error(endpoint):
-        print(error)
-    else:
-        players = get_api_data(endpoint)
-        players = players['entries']
-        players = sorted(players, key=lambda x: -x['leaguePoints'])
-        players = change_id_to_name(players[starting_number:starting_number + 50])
+    json_chall_puuids = json.dumps(chall_puuids, indent=4)
+    with open("chall_puuids.json", "w") as outfile:
+        outfile.write(json_chall_puuids)

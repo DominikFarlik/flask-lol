@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-</head>
-<body>
-    <div class="navbar">
-        <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('summoner') }}">Summoner</a>
-        <a href="{{ url_for('challenger') }}">Challenger</a>
-    </div>
+{% extends 'base.html' %}
+{% block title %}Summoner{% endblock %}
+{% block body %}
     <div>
         {% if error %}
         <p>{{ error }}</p>
@@ -35,5 +25,4 @@
         <p>{{ flex_data.tier }} {{ flex_data.rank }} {{ flex_data.leaguePoints }} LP </p>
         <p>{{ flex_data.wins }} W {{ flex_data.losses }} L</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}

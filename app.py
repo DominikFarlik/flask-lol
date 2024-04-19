@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from functions import error, get_api_data, get_name_by_puuid, get_puuid_by_id, change_id_to_name, load_challengers
+from flask import Flask, render_template, request
+from functions import error, get_api_data, get_name_by_puuid, get_puuid_by_id, load_puuids_to_file_from_ids
 
 app = Flask(__name__)
 
@@ -7,6 +7,18 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/processInput', methods=['POST', 'GET'])
+def processInput():
+    input_data = request.form['userInput']
+
+    if input_data:
+        processed_data = f"You entered: {input_data}"
+    else:
+        processed_data = "You didn't enter anything!"
+
+    return render_template('summoner.html', result=processed_data)
 
 
 @app.route('/summoner')
@@ -28,7 +40,7 @@ def summoner():
                                    soloq_data=ranked_data[1], flex_data=ranked_data[0])
 
 
-@app.route('/challenger')
+@app.route('/challenger', methods=['GET', 'POST'])
 async def challenger():
     queue = "RANKED_SOLO_5x5"
     endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
@@ -39,7 +51,8 @@ async def challenger():
         data = get_api_data(endpoint)
         data = data['entries']
         data = sorted(data, key=lambda x: -x['leaguePoints'])
-        #data = change_id_to_name(data)
+        #load_puuids_to_file_from_ids(data)
+
         return render_template('challenger.html', data=data)
 
 
