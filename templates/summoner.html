@@ -2,8 +2,8 @@
 {% block title %}Summoner{% endblock %}
 {% block body %}
     <div>
-        {% if error %}
-        <p>{{ error }}</p>
+        {% if player_data_error %}
+            <span>{{ player_data_error }}</span><br>
         {% else %}
             <div class="vertical-container">
                 <div class="horizontal-container">
@@ -14,13 +14,12 @@
                     <span>{{ summoner_name }}</span>
                 </div>
             </div>
-        {% endif %}
-
     </div>
+
     <div class="vertical-container">
         <div class="horizontal-container">
-            {% if error %}
-                <p>{{ error }}</p>
+            {% if rank_error %}
+                <p>{{ rank_error }}</p>
             {% else %}
             {% if soloq_data %}
                 <div class="rank-container">
@@ -41,8 +40,16 @@
         {% endif %}
         </div>
         <div class="match-history">
-            <div class="horizontal-container">d</div>
+            {% if match_history_error %}
+                {{ match_history_error }}
+            {% else %}
+                {% for i in match_history_data %}
+                <div class="horizontal-container">
+                    {{ i }}
+                </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
-
+    {% endif %}
 {% endblock %}

@@ -9,6 +9,7 @@ EUN1_URL = "https://eun1.api.riotgames.com"
 
 EUROPE_CLUSTER_URL = "https://europe.api.riotgames.com"
 
+
 def get_api_data(endpoint):
     url = EUN1_URL + endpoint
 
@@ -22,8 +23,31 @@ def get_api_data(endpoint):
         return error_message
 
 
+def get_api_data_by_region(endpoint):
+    url = EUROPE_CLUSTER_URL + endpoint
+
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        error_message = f"Error: {response.status_code}"
+        return error_message
+
+
 def error(endpoint):
     url = EUN1_URL + endpoint
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        return False
+    else:
+        return True
+
+
+def error_by_region(endpoint):
+    url = EUROPE_CLUSTER_URL + endpoint
     response = requests.get(url, headers=HEADERS)
 
     if response.status_code == 200:
@@ -57,6 +81,7 @@ def get_puuid_by_id(encryptedSummonerId):
         error_message = f"Error: {response.status_code}"
         return error_message
 
+
 def load_puuids_to_file_from_ids(data):
     chall_puuids = []
     for i in data:
@@ -65,3 +90,8 @@ def load_puuids_to_file_from_ids(data):
     json_chall_puuids = json.dumps(chall_puuids, indent=4)
     with open("chall_puuids.json", "w") as outfile:
         outfile.write(json_chall_puuids)
+
+
+def calculate_winrate(data):
+    winrate = round((data['wins'] / (data['wins'] + data['losses'])) * 100, 1)
+    return winrate

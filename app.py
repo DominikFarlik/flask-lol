@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from functions import error, get_api_data, get_name_by_puuid, get_puuid_by_id, load_puuids_to_file_from_ids
+from functions import error, get_api_data, get_api_data_by_region, calculate_winrate, get_name_by_puuid, get_puuid_by_id, \
+    load_puuids_to_file_from_ids, error_by_region
 
 app = Flask(__name__)
 
@@ -21,37 +22,60 @@ def processInput():
 
 @app.route('/summoner/<summoner_name>')
 def summoner(summoner_name):
-    endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
+    # variables for html
+    rank_error = ""
+    match_history_error = ""
+    match_history_data = []
+    solo_data = []
+    flex_data = []
+    solo_winrate = 0
+    flex_winrate = 0
 
+    # getting summoner level and icon
+    endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
     if error(endpoint):
-        return render_template('summoner.html', error=get_api_data(endpoint))
+        return render_template('summoner.html', player_data_error=get_api_data(endpoint))
     else:
         player_data = get_api_data(endpoint)
-        endpoint = f"/lol/league/v4/entries/by-summoner/{player_data['id']}"
-        if error(endpoint):
-            return render_template('summoner.html', error=get_api_data(endpoint))
-        else:
-            ranked_data = get_api_data(endpoint)
-            print(ranked_data)
-            soloq_data = []
-            flex_data = []
-            solo_winrate = 0
-            flex_winrate = 0
-            for i in range(len(ranked_data)):
-                if ranked_data[i]['queueType'] == 'RANKED_SOLO_5x5':
-                    soloq_data = ranked_data[i]
-                elif ranked_data[i]['queueType'] == 'RANKED_FLEX_SR':
-                    flex_data = ranked_data[i]
-            if soloq_data:
-                solo_winrate = round((soloq_data['wins'] / (soloq_data['wins'] + soloq_data['losses'])) * 100, 1)
-            if flex_data:
-                flex_winrate = round((flex_data['wins'] / (flex_data['wins'] + flex_data['losses'])) * 100, 1)
-            return render_template('summoner.html', player_data=player_data, summoner_name=summoner_name,
-                                   soloq_data=soloq_data, flex_data=flex_data, solo_winrate=solo_winrate, flex_winrate=flex_winrate)
+
+    # getting information about player rank statistics
+    endpoint = f"/lol/league/v4/entries/by-summoner/{player_data['id']}"
+    if error(endpoint):
+        rank_error = get_api_data(endpoint)
+    else:
+        ranked_data = get_api_data(endpoint)
+        for i in range(len(ranked_data)):
+            if ranked_data[i]['queueType'] == 'RANKED_SOLO_5x5':
+                solo_data = ranked_data[i]
+            elif ranked_data[i]['queueType'] == 'RANKED_FLEX_SR':
+                flex_data = ranked_data[i]
+        if solo_data:
+            solo_winrate = calculate_winrate(solo_data)
+        if flex_data:
+            flex_winrate = calculate_winrate(flex_data)
+
+    # getting player matches
+    endpoint = f"/lol/match/v5/matches/by-puuid/{player_data['puuid']}/ids"
+    if error_by_region(endpoint):
+        match_history_error = get_api_data_by_region(endpoint)
+    else:
+        match_history_data = get_api_data_by_region(endpoint)
+        print(match_history_data)
+
+    return render_template('summoner.html',
+                           player_data=player_data,
+                           summoner_name=summoner_name,
+                           soloq_data=solo_data,
+                           flex_data=flex_data,
+                           solo_winrate=solo_winrate,
+                           flex_winrate=flex_winrate,
+                           rank_error=rank_error,
+                           match_history_error=match_history_error,
+                           match_history_data=match_history_data)
 
 
 @app.route('/challenger', methods=['GET', 'POST'])
-async def challenger():
+def challenger():
     queue = "RANKED_SOLO_5x5"
     endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
 
@@ -61,7 +85,7 @@ async def challenger():
         data = get_api_data(endpoint)
         data = data['entries']
         data = sorted(data, key=lambda x: -x['leaguePoints'])
-        #load_puuids_to_file_from_ids(data)
+        # load_puuids_to_file_from_ids(data)
 
         return render_template('challenger.html', data=data)
 
