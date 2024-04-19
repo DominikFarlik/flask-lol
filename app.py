@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from functions import error, get_api_data, get_api_data_by_region, calculate_winrate, get_name_by_puuid, get_puuid_by_id, \
     load_puuids_to_file_from_ids, error_by_region
+import time
 
 app = Flask(__name__)
 
@@ -59,8 +60,13 @@ def summoner(summoner_name):
     if error_by_region(endpoint):
         match_history_error = get_api_data_by_region(endpoint)
     else:
-        match_history_data = get_api_data_by_region(endpoint)
-        print(match_history_data)
+        data = get_api_data_by_region(endpoint)
+        for matchId in data:
+            match_history_data.append(get_api_data_by_region(f"/lol/match/v5/matches/{matchId}"))
+        for i in match_history_data:
+            time_struct = time.localtime(i['info']['gameDuration'])
+            i['info']['gameDuration'] = str(time_struct.tm_min) + ":" + str(time_struct.tm_sec)
+    print(match_history_data[0])
 
     return render_template('summoner.html',
                            player_data=player_data,
