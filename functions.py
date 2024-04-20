@@ -9,3 +9,7 @@ def calculate_winrate(data):
 def convert_epoch_to_duration(epoch):
     time_struct = time.localtime(epoch)
     return str(time_struct.tm_min) + ":" + str(time_struct.tm_sec)
+
+
+def sort_data_by_value(data, value):
+    return sorted(data, key=lambda x: -x[value])

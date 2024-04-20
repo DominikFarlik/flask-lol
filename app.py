@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from functions import calculate_winrate, convert_epoch_to_duration
+from functions import calculate_winrate, convert_epoch_to_duration, sort_data_by_value
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
-from db_functions import find_document_without_puuid, add_missing_puuids, get_collection
+from db_functions import find_document_without_puuid, add_missing_puuids, get_collection, update_new_players
 
 app = Flask(__name__)
 
@@ -89,19 +89,15 @@ def challenger():
 
     if error(endpoint):
         return render_template('challenger.html', error=get_api_data(endpoint))
-    else:
-        api_data = get_api_data(endpoint)
 
+    api_data = get_api_data(endpoint)
     entries = api_data['entries']
-
-    data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
-
-    # players_collection.insert_many(data)
-
+    new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
+    
+    update_new_players(new_players_data)
     data_without_puuid = find_document_without_puuid()
     add_missing_puuids(data_without_puuid)
-
-    data = sorted(data, key=lambda x: -x['leaguePoints'])
+    data = sort_data_by_value(new_players_data, 'leaguePoints')
 
     return render_template('challenger.html', data=data)
 
