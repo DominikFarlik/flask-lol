@@ -15,7 +15,8 @@ def find_document_without_puuid():
         {'$or': [{"puuid": {'$exists': False}}, {"puuid": {"$exists": True, "$eq": None}}]})
 
 
-def add_missing_puuids(data_without_puuid):
+def add_missing_puuids():
+    data_without_puuid = find_document_without_puuid()
     for document in data_without_puuid:
         players_collection.update_one({'summonerId': document['summonerId']},
                                       {"$set": {"puuid": get_puuid_by_id(document['summonerId'])}})
@@ -36,6 +37,8 @@ def update_new_players(new_players):
     for player in new_players:
         query = {'summonerId': player['summonerId']}
         players_collection.update_one(query, {'$set': player}, upsert=True)
+
+    add_missing_puuids()
 
 
 def get_collection(collection):

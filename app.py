@@ -6,25 +6,28 @@ from db_functions import find_document_without_puuid, add_missing_puuids, get_co
 app = Flask(__name__)
 
 
+# home page
 @app.route('/')
 def index():
     return render_template('index.html')
 
 
+# displaying data(mostly for testing)
 @app.route('/players', methods=['GET'])
 def get_players():
     players = list(get_collection("players").find({}, {"_id": 0}))
     return jsonify(players), 200
 
 
+# processing input from navbar input
 @app.route('/processInput', methods=['POST', 'GET'])
 def processInput():
     input_data = request.form['userInput']
-
     if input_data:
         return redirect(url_for('summoner', summoner_name=input_data))
 
 
+# displaying data of specific summoner
 @app.route('/summoner/<summoner_name>')
 def summoner(summoner_name):
     # variables for html
@@ -82,6 +85,7 @@ def summoner(summoner_name):
                            match_history_data=match_history_data)
 
 
+# just list of current challengers with additional data
 @app.route('/challenger', methods=['GET', 'POST'])
 def challenger():
     queue = "RANKED_SOLO_5x5"
@@ -93,10 +97,8 @@ def challenger():
     api_data = get_api_data(endpoint)
     entries = api_data['entries']
     new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
-    
+
     update_new_players(new_players_data)
-    data_without_puuid = find_document_without_puuid()
-    add_missing_puuids(data_without_puuid)
     data = sort_data_by_value(new_players_data, 'leaguePoints')
 
     return render_template('challenger.html', data=data)
