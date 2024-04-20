@@ -62,10 +62,10 @@ def get_name_by_puuid(puuid):
 
     if response.status_code == 200:
         data = response.json()
+        print(data['gameName'])
         return data['gameName']
     else:
-        error_message = f"Error: {response.status_code}"
-        return error_message
+        return None
 
 
 def get_puuid_by_id(encryptedSummonerId):

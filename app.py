@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from functions import calculate_winrate, convert_epoch_to_duration, sort_data_by_value
+from functions import calculate_winrate, convert_epoch_to_duration
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
-from db_functions import find_document_without_puuid, add_missing_puuids, get_collection, update_new_players
+from db_functions import get_collection, update_new_players, sort_by_value
 
 app = Flask(__name__)
 
@@ -97,10 +97,8 @@ def challenger():
     api_data = get_api_data(endpoint)
     entries = api_data['entries']
     new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
-
     update_new_players(new_players_data)
-    data = sort_data_by_value(new_players_data, 'leaguePoints')
-
+    data = sort_by_value('leaguePoints', "players")
     return render_template('challenger.html', data=data)
 
 
