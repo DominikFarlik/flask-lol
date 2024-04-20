@@ -1,14 +1,37 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from functions import error, get_api_data, get_api_data_by_region, calculate_winrate, get_name_by_puuid, get_puuid_by_id, \
     load_puuids_to_file_from_ids, error_by_region
 import time
+import pprint
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
 app = Flask(__name__)
 
+# mongoDB setup
+uri = ("mongodb+srv://dominikfarlik:Vej.5.syp.yke@cluster0.elmflqy.mongodb.net/flask_lol?retryWrites=true&w=majority"
+       "&appName=Cluster0")
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client["flask_lol"]
+players_collection = db["players"]
+
+# verifying connection with db
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/players', methods=['GET'])
+def get_users():
+    pprint.pprint(players_collection.find({}))
+    players = players_collection.find_one()
+    return players['name'], 200
 
 
 @app.route('/processInput', methods=['POST', 'GET'])
@@ -16,9 +39,7 @@ def processInput():
     input_data = request.form['userInput']
 
     if input_data:
-        endpoint = f"/lol/summoner/v4/summoners/by-name/{input_data}"
-
-    return redirect(url_for('summoner', summoner_name=input_data))
+        return redirect(url_for('summoner', summoner_name=input_data))
 
 
 @app.route('/summoner/<summoner_name>')
@@ -90,9 +111,11 @@ def challenger():
     else:
         data = get_api_data(endpoint)
         data = data['entries']
-        data = sorted(data, key=lambda x: -x['leaguePoints'])
-        # load_puuids_to_file_from_ids(data)
+        summIds = [{key: d[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for d in data]
+        players_collection.insert_many(summIds)
 
+        # load_puuids_to_file_from_ids(data)
+        data = sorted(data, key=lambda x: -x['leaguePoints'])
         return render_template('challenger.html', data=data)
 
 
