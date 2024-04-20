@@ -1,26 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from functions import error, get_api_data, get_api_data_by_region, calculate_winrate, get_name_by_puuid, get_puuid_by_id, \
-    load_puuids_to_file_from_ids, error_by_region
-import time
-import pprint
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+from functions import calculate_winrate, convert_epoch_to_duration
+from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
+from db_functions import find_document_without_puuid, add_missing_puuids, get_collection
 
 app = Flask(__name__)
 
-# mongoDB setup
-uri = ("mongodb+srv://dominikfarlik:Vej.5.syp.yke@cluster0.elmflqy.mongodb.net/flask_lol?retryWrites=true&w=majority"
-       "&appName=Cluster0")
-client = MongoClient(uri, server_api=ServerApi('1'))
-db = client["flask_lol"]
-players_collection = db["players"]
-
-# verifying connection with db
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
 
 @app.route('/')
 def index():
@@ -28,10 +12,9 @@ def index():
 
 
 @app.route('/players', methods=['GET'])
-def get_users():
-    pprint.pprint(players_collection.find({}))
-    players = players_collection.find_one()
-    return players['name'], 200
+def get_players():
+    players = list(get_collection("players").find({}, {"_id": 0}))
+    return jsonify(players), 200
 
 
 @app.route('/processInput', methods=['POST', 'GET'])
@@ -85,9 +68,7 @@ def summoner(summoner_name):
         for matchId in data:
             match_history_data.append(get_api_data_by_region(f"/lol/match/v5/matches/{matchId}"))
         for i in match_history_data:
-            time_struct = time.localtime(i['info']['gameDuration'])
-            i['info']['gameDuration'] = str(time_struct.tm_min) + ":" + str(time_struct.tm_sec)
-    print(match_history_data[0])
+            i['info']['gameDuration'] = convert_epoch_to_duration(i['info']['gameDuration'])
 
     return render_template('summoner.html',
                            player_data=player_data,
@@ -109,14 +90,20 @@ def challenger():
     if error(endpoint):
         return render_template('challenger.html', error=get_api_data(endpoint))
     else:
-        data = get_api_data(endpoint)
-        data = data['entries']
-        summIds = [{key: d[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for d in data]
-        players_collection.insert_many(summIds)
+        api_data = get_api_data(endpoint)
 
-        # load_puuids_to_file_from_ids(data)
-        data = sorted(data, key=lambda x: -x['leaguePoints'])
-        return render_template('challenger.html', data=data)
+    entries = api_data['entries']
+
+    data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
+
+    # players_collection.insert_many(data)
+
+    data_without_puuid = find_document_without_puuid()
+    add_missing_puuids(data_without_puuid)
+
+    data = sorted(data, key=lambda x: -x['leaguePoints'])
+
+    return render_template('challenger.html', data=data)
 
 
 if __name__ == '__main__':

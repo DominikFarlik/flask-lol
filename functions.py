@@ -1,97 +1,11 @@
-import requests
-import json
-
-API_KEY = "RGAPI-a2b67eec-0ecb-49ba-848b-03cd27ffb7fb"
-
-HEADERS = {"X-Riot-Token": API_KEY}
-
-EUN1_URL = "https://eun1.api.riotgames.com"
-
-EUROPE_CLUSTER_URL = "https://europe.api.riotgames.com"
-
-
-def get_api_data(endpoint):
-    url = EUN1_URL + endpoint
-
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        error_message = f"Error: {response.status_code}"
-        return error_message
-
-
-def get_api_data_by_region(endpoint):
-    url = EUROPE_CLUSTER_URL + endpoint
-
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        error_message = f"Error: {response.status_code}"
-        return error_message
-
-
-def error(endpoint):
-    url = EUN1_URL + endpoint
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        return False
-    else:
-        return True
-
-
-def error_by_region(endpoint):
-    url = EUROPE_CLUSTER_URL + endpoint
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        return False
-    else:
-        return True
-
-
-def get_name_by_puuid(puuid):
-    endpoint = f"/riot/account/v1/accounts/by-puuid/{puuid}"
-    url = EUROPE_CLUSTER_URL + endpoint
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data['gameName']
-    else:
-        error_message = f"Error: {response.status_code}"
-        return error_message
-
-
-def get_puuid_by_id(encryptedSummonerId):
-    endpoint = f"/lol/summoner/v4/summoners/{encryptedSummonerId}"
-    url = EUN1_URL + endpoint
-    response = requests.get(url, headers=HEADERS)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data['puuid']
-    else:
-        error_message = f"Error: {response.status_code}"
-        return error_message
-
-
-def load_puuids_to_file_from_ids(data):
-    chall_puuids = []
-    for i in data:
-        chall_puuids.append(get_puuid_by_id(i['summonerId']))
-
-    json_chall_puuids = json.dumps(chall_puuids, indent=4)
-    with open("chall_puuids.json", "w") as outfile:
-        outfile.write(json_chall_puuids)
+import time
 
 
 def calculate_winrate(data):
     winrate = round((data['wins'] / (data['wins'] + data['losses'])) * 100, 1)
     return winrate
+
+
+def convert_epoch_to_duration(epoch):
+    time_struct = time.localtime(epoch)
+    return str(time_struct.tm_min) + ":" + str(time_struct.tm_sec)
