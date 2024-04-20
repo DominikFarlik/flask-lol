@@ -1,7 +1,7 @@
 import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from api_functions import get_puuid_by_id, get_name_by_puuid
+from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid
 from functions import calculate_winrate
 
 # mongoDB setup
@@ -25,10 +25,18 @@ def add_missing_puuids():
 
 
 def add_missing_gameNames():
-    data_without_gameNames = find_documents_without_element('gameName')
+    #data_without_gameNames = find_documents_without_element('gameName')
+    data_without_gameNames = find_documents_without_element('tagLine')
     for document in data_without_gameNames:
+        game_and_tag = get_name_and_tagline_by_puuid(document['puuid'])
+        if game_and_tag:
+            gameName = game_and_tag['gameName']
+            tagLine = game_and_tag['tagLine']
+        else:
+            gameName = None
+            tagLine = None
         players_collection.update_one({'puuid': document['puuid']},
-                                      {"$set": {"gameName": get_name_by_puuid(document['puuid'])}})
+                                      {"$set": {"gameName": gameName, "tagLine": tagLine}})
 
 
 def update_new_players(new_players):
@@ -41,16 +49,18 @@ def update_new_players(new_players):
         for player in players_to_remove:
             query = {'summonerId': player['summonerId']}
             players_collection.delete_one(query)
+        print("Old player data removed")
 
     # updating all players data, if they are not in db, they are added
     for player in new_players:
         player['winrate'] = calculate_winrate(player)
         query = {'summonerId': player['summonerId']}
         players_collection.update_one(query, {'$set': player}, upsert=True)
-
+    print("Players updated")
     add_missing_puuids()
-
+    print("Player puuids added")
     add_missing_gameNames()
+    print("Player names added")
 
 
 def get_collection(collection):

@@ -15,7 +15,7 @@
     <div class="navbar">
         <div class="navbar-left">
             <a href="{{ url_for('index') }}">Home</a>
-            <a href="{{ url_for('challenger') }}">Challenger</a>
+            <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
         </div>
         <div class="navbar-middle">
             <form action="/processInput" method="post">
@@ -29,7 +29,9 @@
     </div>
 </header>
 <body>
-{% block body %}
-{% endblock %}
+<div class="content">
+    {% block body %}
+    {% endblock %}
+</div>
 </body>
 </html>

@@ -86,20 +86,21 @@ def summoner(summoner_name):
 
 
 # just list of current challengers with additional data
-@app.route('/challenger', methods=['GET', 'POST'])
-def challenger():
+@app.route('/leaderboard', methods=['GET', 'POST'])
+def leaderboard():
     queue = "RANKED_SOLO_5x5"
     endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
 
     if error(endpoint):
-        return render_template('challenger.html', error=get_api_data(endpoint))
-
+        return render_template('leaderboard.html', error=get_api_data(endpoint))
     api_data = get_api_data(endpoint)
     entries = api_data['entries']
+    print("Api data shortened")
     new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
+    print("More shortening...")
     update_new_players(new_players_data)
     data = sort_by_value('leaguePoints', "players")
-    return render_template('challenger.html', data=data)
+    return render_template('leaderboard.html', data=data)
 
 
 if __name__ == '__main__':

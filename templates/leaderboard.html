@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}Challengers{% endblock %}
+{% block title %}Leaderboard{% endblock %}
 {% block body %}
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
     <h1>SoloQ challenger leaderboard:</h1>
     {% for i in data %}
-        <span>{{ i.gameName }}</span>
+        <span>{{ i.gameName }} #{{ i.tagLine }}</span>
         <span>{{ i.leaguePoints }} LP</span>
         <span>{{ i.wins }} W {{ i.losses }} L</span>
         <span>{{ i.winrate }} %</span><br>

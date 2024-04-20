@@ -16,6 +16,7 @@ def get_api_data(endpoint):
 
     if response.status_code == 200:
         data = response.json()
+        print("Api data retrieved")
         return data
     else:
         error_message = f"Error: {response.status_code}"
@@ -55,15 +56,15 @@ def error_by_region(endpoint):
         return True
 
 
-def get_name_by_puuid(puuid):
+def get_name_and_tagline_by_puuid(puuid):
     endpoint = f"/riot/account/v1/accounts/by-puuid/{puuid}"
     url = EUROPE_CLUSTER_URL + endpoint
     response = requests.get(url, headers=HEADERS)
 
     if response.status_code == 200:
         data = response.json()
-        print(data['gameName'])
-        return data['gameName']
+        print(data)
+        return data
     else:
         return None
 
