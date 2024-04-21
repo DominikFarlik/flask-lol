@@ -2,3 +2,4 @@
 static/dragontail
 .idea/
 .venv/
+__pycache__/
