@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-from functions import calculate_winrate, convert_epoch_to_duration
+from functions import convert_epoch_to_duration, split_and_save_ranked_data
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
-from db_functions import get_collection, update_new_players, sort_by_value
+from db_functions import get_collection, update_new_players, sort_by_value, update_or_add_document_by_id, get_summoner_data_by_id
 
 app = Flask(__name__)
 
@@ -36,59 +36,42 @@ def processInputLeaderboard():
 # displaying data of specific summoner
 @app.route('/summoner/<summoner_name>')
 def summoner(summoner_name):
-    # variables for html
-    rank_error = ""
-    match_history_error = ""
+    errors = {}
     match_history_data = []
-    solo_data = []
-    flex_data = []
-    solo_winrate = 0
-    flex_winrate = 0
 
     # getting summoner level and icon
     endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
     if error(endpoint):
         return render_template('summoner.html', player_data_error=get_api_data(endpoint))
     else:
-        player_data = get_api_data(endpoint)
+        api_data = get_api_data(endpoint)
+        api_data['gameName'] = summoner_name
+        summoner_id = api_data['id']
+        update_or_add_document_by_id(api_data, 'summoner_collection')
 
     # getting information about player rank statistics
-    endpoint = f"/lol/league/v4/entries/by-summoner/{player_data['id']}"
+    endpoint = f"/lol/league/v4/entries/by-summoner/{api_data['id']}"
     if error(endpoint):
-        rank_error = get_api_data(endpoint)
+        errors['rank_error'] = get_api_data(endpoint)
     else:
-        ranked_data = get_api_data(endpoint)
-        for i in range(len(ranked_data)):
-            if ranked_data[i]['queueType'] == 'RANKED_SOLO_5x5':
-                solo_data = ranked_data[i]
-            elif ranked_data[i]['queueType'] == 'RANKED_FLEX_SR':
-                flex_data = ranked_data[i]
-        if solo_data:
-            solo_winrate = calculate_winrate(solo_data)
-        if flex_data:
-            flex_winrate = calculate_winrate(flex_data)
+        split_and_save_ranked_data(get_api_data(endpoint))
 
     # getting player matches
-    endpoint = f"/lol/match/v5/matches/by-puuid/{player_data['puuid']}/ids"
+    endpoint = f"/lol/match/v5/matches/by-puuid/{api_data['puuid']}/ids"
     if error_by_region(endpoint):
-        match_history_error = get_api_data_by_region(endpoint)
+        errors['match_history_error'] = get_api_data_by_region(endpoint)
     else:
         data = get_api_data_by_region(endpoint)
+
+        # processing match data
         for matchId in data:
             match_history_data.append(get_api_data_by_region(f"/lol/match/v5/matches/{matchId}"))
         for i in match_history_data:
             i['info']['gameDuration'] = convert_epoch_to_duration(i['info']['gameDuration'])
+            print(i['info'])
 
-    return render_template('summoner.html',
-                           player_data=player_data,
-                           summoner_name=summoner_name,
-                           soloq_data=solo_data,
-                           flex_data=flex_data,
-                           solo_winrate=solo_winrate,
-                           flex_winrate=flex_winrate,
-                           rank_error=rank_error,
-                           match_history_error=match_history_error,
-                           match_history_data=match_history_data)
+    data = get_summoner_data_by_id(summoner_id)
+    return render_template('summoner.html', data=data, errors=errors, match_history_data=match_history_data)
 
 
 # just list of current challengers with additional data
