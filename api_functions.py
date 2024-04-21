@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "RGAPI-a2b67eec-0ecb-49ba-848b-03cd27ffb7fb"
+API_KEY = "RGAPI-1c043c57-d6ad-4bba-a0b2-162f5e995759"
 
 HEADERS = {"X-Riot-Token": API_KEY}
 
@@ -16,7 +16,6 @@ def get_api_data(endpoint):
 
     if response.status_code == 200:
         data = response.json()
-        print("Api data retrieved")
         return data
     else:
         error_message = f"Error: {response.status_code}"
@@ -63,7 +62,6 @@ def get_name_and_tagline_by_puuid(puuid):
 
     if response.status_code == 200:
         data = response.json()
-        print(data)
         return data
     else:
         return None
@@ -76,7 +74,6 @@ def get_puuid_by_id(encryptedSummonerId):
 
     if response.status_code == 200:
         data = response.json()
-        print(data['puuid'])
         return data['puuid']
     else:
         return None

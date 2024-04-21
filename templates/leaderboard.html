@@ -4,7 +4,10 @@
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-    <h1>SoloQ challenger leaderboard:</h1>
+        <h1>SoloQ leaderboard:</h1>
+        <form action="/leaderboard" method="post">
+            <button type="submit">Update</button>
+        </form>
     {% for i in data %}
         <span>{{ i.gameName }} #{{ i.tagLine }}</span>
         <span>{{ i.leaguePoints }} LP</span>

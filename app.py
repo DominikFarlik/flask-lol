@@ -15,16 +15,22 @@ def index():
 # displaying data(mostly for testing)
 @app.route('/players', methods=['GET'])
 def get_players():
-    players = list(get_collection("players").find({}, {"_id": 0}))
+    players = list(get_collection("challengers").find({}, {"_id": 0}))
     return jsonify(players), 200
 
 
 # processing input from navbar input
-@app.route('/processInput', methods=['POST', 'GET'])
-def processInput():
+@app.route('/processInput/navbar', methods=['POST', 'GET'])
+def processInputNavbar():
     input_data = request.form['userInput']
     if input_data:
         return redirect(url_for('summoner', summoner_name=input_data))
+
+
+# processing leaderboard update
+@app.route('/processInput/leaderboardUpdate', methods=['POST', 'GET'])
+def processInputLeaderboard():
+    return redirect(url_for('leaderboard'))
 
 
 # displaying data of specific summoner
@@ -88,18 +94,22 @@ def summoner(summoner_name):
 # just list of current challengers with additional data
 @app.route('/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
-    queue = "RANKED_SOLO_5x5"
-    endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
+    if request.method == 'POST':
+        # loading new data from api
+        queue = "RANKED_SOLO_5x5"
+        endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
 
-    if error(endpoint):
-        return render_template('leaderboard.html', error=get_api_data(endpoint))
-    api_data = get_api_data(endpoint)
-    entries = api_data['entries']
-    print("Api data shortened")
-    new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
-    print("More shortening...")
-    update_new_players(new_players_data)
-    data = sort_by_value('leaguePoints', "players")
+        if error(endpoint):
+            return render_template('leaderboard.html', error=get_api_data(endpoint))
+
+        api_data = get_api_data(endpoint)
+        entries = api_data['entries']
+        new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in entries]
+        update_new_players(new_players_data)
+        return redirect(url_for('leaderboard'))
+
+    # local data from db
+    data = sort_by_value('leaguePoints', "challengers")
     return render_template('leaderboard.html', data=data)
 
 
