@@ -2,6 +2,7 @@ import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid
+from functions import calculate_winrate
 
 # mongoDB setup
 uri = ("mongodb+srv://dominikfarlik:Vej.5.syp.yke@cluster0.elmflqy.mongodb.net/flask_lol?retryWrites=true&w=majority"
@@ -41,7 +42,7 @@ def add_missing_gameNames():
 def update_new_players(new_players):
     delete_old_documents(challenger_collection.find(), new_players)
     update_or_add_data_by_value(new_players, 'summonerId', challenger_collection)
-    add_or_update_winrate(challenger_collection)
+    add_or_update_winrate_for_collection(challenger_collection)
     add_missing_puuids()
     add_missing_gameNames()
 
@@ -65,7 +66,7 @@ def get_collection(collection):
 
 def sort_by_value(key, collection):
     if collection == "challengers":
-        return challenger_collection.find().sort(key, pymongo.ASCENDING)
+        return challenger_collection.find().sort(key, pymongo.DESCENDING)
 
 
 # Updating db data or if they are not in db, they are added
@@ -77,25 +78,28 @@ def update_or_add_data_by_value(data, key, collection):
 
 # Insert new document or update existing
 def update_or_add_document_by_id(data, collection):
-    if collection == "summoner_collection":
-        collection = summoner_collection
     query = {'id': data['id']}
     collection.update_one(query, {'$set': data}, upsert=True)
 
 
 # adding winrate value, to given collection
-def add_or_update_winrate(collection):
-    pipeline = [
-        # Calculate winrate and insert it into collection
-        {'$addFields': {
-            'winrate': {'$round': [{'$multiply': [{'$divide': ['$wins', {'$sum': ['$wins', '$losses']}]}, 100]}, 1]}}
-        },
-        # Update the 'winrate' field with the newly calculated value, if there was existing
-        {'$set': {'winrate': '$winrate'}
-         }
-    ]
-    collection.aggregate(pipeline)
+def add_or_update_winrate_for_collection(collection):
+    for document in collection.find():
+        query = {'summonerId': document['summonerId']}
+        winrate = calculate_winrate(document['wins'], document['losses'])
+        collection.update_one(query, {'$set': {'winrate': winrate}}, upsert=True)
 
 
 def get_summoner_data_by_id(summoner_id):
     return summoner_collection.find_one({'id': summoner_id})
+
+
+def split_and_save_ranked_data(data):
+    for queue in data:
+        if queue['queueType'] == 'RANKED_SOLO_5x5':
+            queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
+            update_or_add_document_by_id({'ranked_solo': queue, 'id': queue['summonerId']}, summoner_collection)
+
+        elif queue['queueType'] == 'RANKED_FLEX_SR':
+            queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
+            update_or_add_document_by_id({'ranked_flex': queue, 'id': queue['summonerId']}, summoner_collection)

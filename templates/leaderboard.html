@@ -9,10 +9,12 @@
             <button type="submit">Update</button>
         </form>
     {% for i in data %}
-        <span>{{ i.gameName }} #{{ i.tagLine }}</span>
-        <span>{{ i.leaguePoints }} LP</span>
-        <span>{{ i.wins }} W {{ i.losses }} L</span>
-        <span>{{ i.winrate }} %</span><br>
+        <div class="chall_container">
+            <span>{{ i.gameName }} #{{ i.tagLine }}</span>
+            <span>{{ i.leaguePoints }} LP</span>
+            <span>{{ i.wins }} W {{ i.losses }} L</span>
+            <span>{{ i.winrate }} %</span><br>
+        </div>
     {% endfor %}
     {% endif %}
 {% endblock %}
