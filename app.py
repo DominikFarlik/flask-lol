@@ -49,7 +49,8 @@ def summoner(summoner_name):
         api_data['gameName'] = summoner_name
         summoner_id = api_data['id']
         update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
-
+    data = get_summoner_data_by_id(summoner_id)
+    return render_template('summoner.html', data=data, errors=errors)
     # getting information about player rank statistics
     endpoint = f"/lol/league/v4/entries/by-summoner/{api_data['id']}"
     if error(endpoint):
@@ -68,19 +69,16 @@ def summoner(summoner_name):
         for matchId in data:
             match_history_data.append(get_api_data_by_region(f"/lol/match/v5/matches/{matchId}"))
 
-        match_history = {'match_history': []}
+        match_history = []
         # pick data to store
         for i in match_history_data:
-            i['info']['gameDuration'] = convert_epoch_to_duration(i['info']['gameDuration'])
-            print("-------------------------")
             for j in i['info']['participants']:
                 if j['summonerId'] == summoner_id:
-                    print(j['role'], j['championName'], j['summonerName'], j['summonerId'], j['kills'], j['deaths'], j['assists'], j['win'])
-                    match_history['match_history'].append(j)
-                    update_or_add_document_by_id({'match_history': {i['metadata']['matchId']: j}}, summoner_id, "summoner_collection")
+                    match_history.append(j)
+        update_or_add_document_by_id({'match_history': match_history}, summoner_id, "summoner_collection")
 
     data = get_summoner_data_by_id(summoner_id)
-    return render_template('summoner.html', data=data, errors=errors, match_history_data=match_history_data)
+    return render_template('summoner.html', data=data, errors=errors)
 
 
 # just list of current challengers with additional data

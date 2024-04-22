@@ -43,10 +43,17 @@
             {% if errors.match_history_error %}
                 {{ errors.match_history_error }}
             {% else %}
-                {% for i in data.match_history %}
-                <div class="horizontal-container">
-                    {{ i }}
-
+                {% for row in data.match_history %}
+                {% if row.win %}
+                <div class="match-history-row-win">
+                {% else %}
+                <div class="match-history-row-lose">
+                {% endif %}
+                <div class="champion-face">
+                    <img class="champ-icon-main" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}" alt="{{ row.championName }}">
+                    <div class="match-history-level">{{ row.champLevel }}</div>
+                </div>
+                    <span>{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
                 </div>
                 {% endfor %}
             {% endif %}

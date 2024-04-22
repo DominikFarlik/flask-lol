@@ -77,12 +77,12 @@ def update_or_add_data_by_value(data, key, collection):
 
 
 # Insert new document or update existing
-def update_or_add_document_by_id(data, id, collection):
+def update_or_add_document_by_id(data, summoner_id, collection):
     if collection == "challengers_collection":
         collection = challenger_collection
     elif collection == "summoner_collection":
         collection = summoner_collection
-    query = {'id': id}
+    query = {'id': summoner_id}
     collection.update_one(query, {'$set': data}, upsert=True)
 
 
@@ -107,4 +107,3 @@ def split_and_save_ranked_data(data):
         elif queue['queueType'] == 'RANKED_FLEX_SR':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
             update_or_add_document_by_id({'ranked_flex': queue},queue['summonerId'] ,summoner_collection)
-
