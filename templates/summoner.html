@@ -43,9 +43,10 @@
             {% if errors.match_history_error %}
                 {{ errors.match_history_error }}
             {% else %}
-                {% for i in match_history_data %}
+                {% for i in data.match_history %}
                 <div class="horizontal-container">
-                    {{ i.info.gameDuration }}
+                    {{ i }}
+
                 </div>
                 {% endfor %}
             {% endif %}
