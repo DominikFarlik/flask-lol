@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from functions import convert_epoch_to_duration
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
 from db_functions import (get_collection, update_new_players, sort_by_value, update_or_add_document_by_id,
-                          get_summoner_data_by_id, split_and_save_ranked_data)
+                          get_summoner_data_by_id, split_and_save_ranked_data, change_summ_spell_id_to_name)
 
 app = Flask(__name__)
 
@@ -39,17 +39,21 @@ def processInputLeaderboard():
 def summoner(summoner_name):
     errors = {}
     match_history_data = []
-
+    #change_summ_spell_id_to_name('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
     # getting summoner level and icon
-    endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
-    if error(endpoint):
-        return render_template('summoner.html', player_data_error=get_api_data(endpoint))
-    else:
-        api_data = get_api_data(endpoint)
-        api_data['gameName'] = summoner_name
-        summoner_id = api_data['id']
-        update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
-    data = get_summoner_data_by_id(summoner_id)
+    #endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
+    #if error(endpoint):
+    #    return render_template('summoner.html', player_data_error=get_api_data(endpoint))
+    #else:
+    #    api_data = get_api_data(endpoint)
+    #    api_data['gameName'] = summoner_name
+    #    summoner_id = api_data['id']
+        #update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
+        #if request.method == 'POST':
+        #    # Run the code you provided for POST request
+        #    data = get_summoner_data_by_id(summoner_id)
+        #    return render_template('summoner.html', data=data, errors=errors)
+    data = get_summoner_data_by_id('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
     return render_template('summoner.html', data=data, errors=errors)
     # getting information about player rank statistics
     endpoint = f"/lol/league/v4/entries/by-summoner/{api_data['id']}"

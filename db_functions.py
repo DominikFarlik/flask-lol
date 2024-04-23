@@ -106,4 +106,10 @@ def split_and_save_ranked_data(data):
 
         elif queue['queueType'] == 'RANKED_FLEX_SR':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
-            update_or_add_document_by_id({'ranked_flex': queue},queue['summonerId'] ,summoner_collection)
+            update_or_add_document_by_id({'ranked_flex': queue}, queue['summonerId'], summoner_collection)
+
+
+def change_summ_spell_id_to_name(summoner_id):
+    collection = dict(summoner_collection.find({}))
+    for document in collection['match_history']:
+        print(document['summoner1Id'])

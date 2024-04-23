@@ -11,7 +11,7 @@
 }
 
 body {
-    background-color: #5e0404;
+    background-color: #041e5e;
     color: white;
 }
 
@@ -22,7 +22,7 @@ body {
 .navbar {
     display: flex;
     flex-direction: row;
-    background: #ff0000;
+    background: #041e5e;
     font-size: 20px;
     padding: 8px;
     justify-content: center;
@@ -30,6 +30,7 @@ body {
     position: fixed;
     width: 100%;
     top: 0;
+    z-index: 300;
 }
 
 .navbar-left {
@@ -41,12 +42,14 @@ body {
         text-decoration: none;
         color: white;
         font-weight: 500;
-        background: #b60000;
+        background: #00b6b0;
         padding: 4px;
-        border-radius: 6px;
+        border-radius: 4px;
+        opacity: 0.8;
     }
     a:hover {
-        background: #a60000;
+        background: #03e8e0;
+        opacity: 1;
     }
 }
 
@@ -72,7 +75,7 @@ body {
 
 /* Style for the submit button */
 .search_button {
-    background-color: #d90000;
+    background-color: #00d9d9;
     color: black;
     border: none;
     border-radius: 0 5px 5px 0;
@@ -85,30 +88,89 @@ body {
 
 /* Button hover effect */
 .search_button:hover {
-  background-color: #bb0505;
-    color: white;
+  background-color: #28ffff;
 }
 
 /*summoner.html*/
-.horizontal-container {
+.vertical-container {
     display: flex;
     flex-direction: column;
-    border: 5px solid #3a0000;
     border-radius: 5px;
 }
 
-.vertical-container {
+.horizontal-container {
     display: flex;
     flex-direction: row;
-    border: 5px solid #3a0000;
     border-radius: 5px;
+    padding: 10px;
+}
+
+.profile-icon-container {
+    position: relative;
+    flex: 0 0 93px;
+    width: 93px;
+    height: 93px;
+    border-radius: 6px;
+    background-color: #17172e;
+}
+
+.level-header {
+    border: 2px solid gold;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 4px;
+    background: #00052f;
+    padding: 0 6px 1px;
+}
+
+.profile-icon-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    border: 2px solid gold;
+}
+
+.header-vertical-container {
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+    padding-left: 15px;
+    gap: 10px;
+}
+
+.summoner-name-header {
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.update-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    min-width: 120px;
+    height: 36px;
+    border-radius: 6px;
+    background-color: #3273fa;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    border: none;
 }
 
 .rank-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     padding: 20px;
+    border: 5px solid #000059;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }
 
 .match-history {
@@ -116,18 +178,17 @@ body {
     flex-direction: column;
     flex: 0.8;
     align-items: flex-start;
-    border: 5px solid #3a0000;
-    padding: 10px;
+    padding: 0 10px 10px;
     border-radius: 5px;
+    gap: 2px;
 }
 
 .match-history-row-win {
     display: flex;
     flex-direction: row;
-    border: 5px solid #3a0000;
     border-radius: 5px;
     align-items: center;
-    background: green;
+    background: #198019;
     padding: 5px;
     margin: 2px;
     width: 97%;
@@ -136,13 +197,17 @@ body {
 .match-history-row-lose {
     display: flex;
     flex-direction: row;
-    border: 5px solid #3a0000;
     border-radius: 5px;
     align-items: center;
-    background: red;
+    background: #8f0000;
     padding: 5px;
     margin: 2px;
     width: 97%;
+}
+
+.champion {
+    position: relative;
+    margin-right: 2px;
 }
 
 .champion-face {
@@ -155,7 +220,7 @@ body {
     overflow: hidden;
 }
 
-.match-history-level {
+.champion-level {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -167,12 +232,10 @@ body {
     text-align: center;
 }
 
-.champ-icon-main {
+.champion-img {
     width: 100%;
     height: 100%;
     transform: scale(1.1);
-    border: 0;
-    vertical-align: middle;
 }
 
 /*Leaderboard*/

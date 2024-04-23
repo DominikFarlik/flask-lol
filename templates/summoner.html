@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
 {% block title %}Summoner{% endblock %}
 {% block body %}
-    <div>
-        {% if player_data_error %}
-            <span>{{ player_data_error }}</span><br>
-        {% else %}
-            <div class="vertical-container">
-                <div class="horizontal-container">
-                    <span>{{ data.summonerLevel }}</span>
-                    <img style="width: 50px; height: 50px" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
-                </div>
-                <div>
-                    <span>{{ data.gameName }}</span>
-                </div>
-            </div>
-    </div>
-
-    <div class="vertical-container">
+    {% if player_data_error %}
+        <span>{{ player_data_error }}</span><br>
+    {% else %}
         <div class="horizontal-container">
+            <div class="profile-icon-container">
+                <div class="level-header">{{ data.summonerLevel }}</div>
+                <img class="profile-icon-image" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
+            </div>
+            <div class="header-vertical-container">
+                <span class="summoner-name-header">{{ data.gameName }}</span>
+                <form action="{{ url_for('summoner', summoner_name=summoner_name) }}" method="post">
+                    <button type="submit" class="update-button">Update</button>
+                </form>
+            </div>
+        </div>
+
+    <div class="horizontal-container">
+        <div class="vertical-container">
             {% if errors.rank_error %}
                 <p>{{ errors.rank_error }}</p>
             {% else %}
@@ -26,15 +27,17 @@
                     <span>Ranked Solo</span>
                     <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
                     <span>{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
-                    <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L {{ data.ranked_solo.winrate }} % Win rate</span>
+                    <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L</span>
+                    <span>{{ data.ranked_solo.winrate }} % Win rate</span>
                 </div>
             {% endif %}
             {% if data.ranked_flex %}
                 <div class="rank-container">
                     <span>Ranked Flex</span>
-                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}">
+                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}" alt="data.ranked_flex.tier">
                     <span>{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
-                    <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L {{ data.ranked_flex.winrate }} % Win rate</span>
+                    <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L</span>
+                    <span>{{ data.ranked_flex.winrate }} % Win rate</span>
                 </div>
             {% endif %}
         {% endif %}
@@ -45,19 +48,23 @@
             {% else %}
                 {% for row in data.match_history %}
                 {% if row.win %}
-                <div class="match-history-row-win">
+                    <div class="match-history-row-win">
                 {% else %}
-                <div class="match-history-row-lose">
+                    <div class="match-history-row-lose">
                 {% endif %}
-                <div class="champion-face">
-                    <img class="champ-icon-main" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}" alt="{{ row.championName }}">
-                    <div class="match-history-level">{{ row.champLevel }}</div>
-                </div>
-                    <span>{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
-                </div>
+                        <div class="champion">
+                            <div class="champion-face">
+                                <img class="champion-img" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}" alt="{{ row.championName }}">
+                                <div class="champion-level">{{ row.champLevel }}</div>
+                            </div>
+                        </div>
+                            <span>{{ row.summoner1Id }}</span>
+                            <span>{{ row.summoner2Id }}</span>
+                            <span>{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
+                    </div>
                 {% endfor %}
             {% endif %}
         </div>
-    </div>
+        </div>
     {% endif %}
 {% endblock %}
