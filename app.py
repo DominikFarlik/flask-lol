@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from functions import convert_epoch_to_duration
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
-from db_functions import (get_collection, update_new_players, sort_by_value, update_or_add_document_by_id,
-                          get_summoner_data_by_id, split_and_save_ranked_data, add_summoner_spell_names, add_kda)
+from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
+                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names, add_kda)
 
 app = Flask(__name__)
 
@@ -11,13 +11,6 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template('index.html')
-
-
-# displaying data(mostly for testing)
-@app.route('/players', methods=['GET'])
-def get_players():
-    players = list(get_collection("challengers").find({}, {"_id": 0}))
-    return jsonify(players), 200
 
 
 # processing input from navbar input
@@ -42,26 +35,13 @@ def summoner(summoner_name):
         api_data = get_api_data_by_region(endpoint)
         print(api_data)
         encryptedPUUID = api_data['puuid']
-
-        # getting summoner level and icon
-        endpoint = f"/lol/summoner/v4/summoners/by-puuid/{encryptedPUUID}"
-        if error(endpoint):
-            errors['player_data_error'] = get_api_data(endpoint)
-            pass
-        else:
-            api_data = get_api_data(endpoint)
-            print(api_data)
-            api_data['gameName'] = gameName
-            api_data['tagLine'] = tagLine
-            summoner_id = api_data['id']
-            update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
-
-            data = get_summoner_data_by_id(summoner_id)
-            match_history = data.get('match_history')
-            if match_history:
-                return render_template('summoner.html', data=data, errors={})
-            #else:
-                #return redirect(url_for('summonerUpdate', gameName=gameName, tagLine=tagLine))
+        update_or_add_document_by_puuid(api_data, encryptedPUUID, 'summoner_collection')
+        data = get_summoner_data_by_puuid(encryptedPUUID)
+        match_history = data.get('match_history')
+        if match_history:
+            return render_template('summoner.html', data=data, errors={})
+        #else:
+            #return redirect(url_for('summonerUpdate', gameName=gameName, tagLine=tagLine))
 
 
 @app.route('/summoner/updated', methods=['POST', 'GET'])
@@ -91,7 +71,7 @@ def summonerUpdate():
             api_data['gameName'] = gameName
 
             summoner_id = api_data['id']
-            update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
+            update_or_add_document_by_puuid(api_data, encryptedPUUID, 'summoner_collection')
 
         # getting information about player rank statistics
         endpoint = f"/lol/league/v4/entries/by-summoner/{api_data['id']}"
@@ -115,11 +95,10 @@ def summonerUpdate():
                     for j in i['info']['participants']:
                         if j['summonerId'] == summoner_id:
                             match_history.append(j)
-                update_or_add_document_by_id({'match_history': match_history}, summoner_id, "summoner_collection")
+                update_or_add_document_by_puuid({'match_history': match_history}, encryptedPUUID, "summoner_collection")
                 add_summoner_spell_names(summoner_id)
                 add_kda(summoner_id)
 
-    data = get_summoner_data_by_id(summoner_id)
     return redirect(url_for('summoner', summoner_name=gameName + " #" + tagLine))
 
 

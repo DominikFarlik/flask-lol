@@ -77,12 +77,12 @@ def update_or_add_data_by_value(data, key, collection):
 
 
 # Insert new document or update existing
-def update_or_add_document_by_id(data, summoner_id, collection):
+def update_or_add_document_by_puuid(data, puuid, collection):
     if collection == "challengers_collection":
         collection = challenger_collection
     elif collection == "summoner_collection":
         collection = summoner_collection
-    query = {'id': summoner_id}
+    query = {'puuid': puuid}
     collection.update_one(query, {'$set': data}, upsert=True)
 
 
@@ -94,19 +94,19 @@ def add_or_update_winrate_for_collection(collection):
         collection.update_one(query, {'$set': {'winrate': winrate}}, upsert=True)
 
 
-def get_summoner_data_by_id(summoner_id):
-    return summoner_collection.find_one({'id': summoner_id})
+def get_summoner_data_by_puuid(puuid):
+    return summoner_collection.find_one({'puuid': puuid})
 
 
 def split_and_save_ranked_data(data):
     for queue in data:
         if queue['queueType'] == 'RANKED_SOLO_5x5':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
-            update_or_add_document_by_id({'ranked_solo': queue}, queue['summonerId'], summoner_collection)
+            update_or_add_document_by_puuid({'ranked_solo': queue}, queue['summonerId'], summoner_collection)
 
         elif queue['queueType'] == 'RANKED_FLEX_SR':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
-            update_or_add_document_by_id({'ranked_flex': queue}, queue['summonerId'], summoner_collection)
+            update_or_add_document_by_puuid({'ranked_flex': queue}, queue['summonerId'], summoner_collection)
 
 
 def add_summoner_spell_names(summoner_id):
