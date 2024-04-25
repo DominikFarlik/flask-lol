@@ -168,7 +168,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    border: 5px solid #000059;
+    background: #000059;
     border-radius: 5px;
     margin-bottom: 10px;
 }
@@ -236,6 +236,53 @@ body {
     width: 100%;
     height: 100%;
     transform: scale(1.1);
+}
+
+.summoner-spells {
+    display: flex;
+    flex-direction: column;
+    margin-right: 2px;
+    gap: 2px;
+}
+
+.summoner-spell {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    background-color: #191937;
+}
+
+.post-game-stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.items {
+    display: grid;
+    grid-gap: 2px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    padding: 3px;
+    margin-left: 18px;
+    background: #000059;
+    border-radius: 4px;
+}
+
+.item {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    background-color: #191937;
+}
+
+.blank-item {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    background: #000026;
 }
 
 /*Leaderboard*/

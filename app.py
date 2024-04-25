@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from functions import convert_epoch_to_duration
 from api_functions import error, get_api_data, get_api_data_by_region, error_by_region
 from db_functions import (get_collection, update_new_players, sort_by_value, update_or_add_document_by_id,
-                          get_summoner_data_by_id, split_and_save_ranked_data, change_summ_spell_id_to_name)
+                          get_summoner_data_by_id, split_and_save_ranked_data, add_summoner_spell_names, add_kda)
 
 app = Flask(__name__)
 
@@ -31,7 +31,8 @@ def processInputNavbar():
 # displaying data of specific summoner
 @app.route('/summoner/<summoner_name>')
 def summoner(summoner_name):
-    # change_summ_spell_id_to_name('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
+    add_summoner_spell_names('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
+    add_kda('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
     data = get_summoner_data_by_id('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
     return render_template('summoner.html', data=data, errors={})
 

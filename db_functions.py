@@ -109,8 +109,40 @@ def split_and_save_ranked_data(data):
             update_or_add_document_by_id({'ranked_flex': queue}, queue['summonerId'], summoner_collection)
 
 
-def change_summ_spell_id_to_name(summoner_id):
-    collection = summoner_collection.find({'id': summoner_id})
-    print(summoner_collection.find({'id': summoner_id}))
-    for document in collection['match_history']:
-        print(document['summoner1Id'])
+def add_summoner_spell_names(summoner_id):
+    player_data = summoner_collection.find_one({'id': summoner_id})
+
+    summoner_names = {
+        1: "SummonerBoost",
+        4: "SummonerFlash",
+        6: "SummonerHaste",
+        7: "SummonerHeal",
+        12: "SummonerTeleport",
+        14: "SummonerDot"
+    }
+
+    for match_data in player_data.get('match_history', []):
+        summoner1_id = match_data.get('summoner1Id')
+        if summoner1_id in summoner_names:
+            match_data['summoner1Name'] = summoner_names[summoner1_id]
+
+        summoner2_id = match_data.get('summoner2Id')
+        if summoner2_id in summoner_names:
+            match_data['summoner2Name'] = summoner_names[summoner2_id]
+
+    summoner_collection.update_one(
+        {'id': 'ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0'},
+        {'$set': {'match_history': player_data['match_history']}}
+    )
+
+
+def add_kda(summoner_id):
+    player_data = summoner_collection.find_one({'id': summoner_id})
+
+    for match_data in player_data.get('match_history', []):
+        match_data['kda'] = "{:.2f}".format((match_data['kills'] + match_data['assists']) / match_data['deaths'])
+
+    summoner_collection.update_one(
+        {'id': 'ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0'},
+        {'$set': {'match_history': player_data['match_history']}}
+    )
