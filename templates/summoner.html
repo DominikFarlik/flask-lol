@@ -64,8 +64,9 @@
                             <img class="summoner-spell" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner2Name)) }}" alt="{{ row.summoner2Name }}">
                         </div>
                         <div class="post-game-stats">
-                            <span>{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
+                            <span class="main-stats">{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
                             <span>{{ row.kda }} KDA</span>
+                        <span>{{ row.totalMinionsKilled + row.neutralMinionsKilled}} CS</span>
                         </div>
                         <div class="items">
                             {% if row.item0 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item0)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
