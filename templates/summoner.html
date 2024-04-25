@@ -10,8 +10,9 @@
                 <img class="profile-icon-image" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
             </div>
             <div class="header-vertical-container">
-                <span class="summoner-name-header">{{ data.gameName }}</span>
+                <span class="summoner-name-header">{{ data.gameName }} #{{ data.tagLine }}</span>
                 <form action="/summoner/updated" method="post">
+                    <input type="hidden" name="tagLine" value="{{ data.tagLine }}">
                     <button type="submit" class="update-button" name="gameName" value="{{ data.gameName }}">Update</button>
                 </form>
             </div>

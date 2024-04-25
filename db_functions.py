@@ -114,9 +114,11 @@ def add_summoner_spell_names(summoner_id):
 
     summoner_names = {
         1: "SummonerBoost",
+        3: "SummonerExhaust",
         4: "SummonerFlash",
         6: "SummonerHaste",
         7: "SummonerHeal",
+        11: "SummonerSmite",
         12: "SummonerTeleport",
         14: "SummonerDot"
     }
@@ -131,7 +133,7 @@ def add_summoner_spell_names(summoner_id):
             match_data['summoner2Name'] = summoner_names[summoner2_id]
 
     summoner_collection.update_one(
-        {'id': 'ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0'},
+        {'id': summoner_id},
         {'$set': {'match_history': player_data['match_history']}}
     )
 
@@ -140,9 +142,11 @@ def add_kda(summoner_id):
     player_data = summoner_collection.find_one({'id': summoner_id})
 
     for match_data in player_data.get('match_history', []):
-        match_data['kda'] = "{:.2f}".format((match_data['kills'] + match_data['assists']) / match_data['deaths'])
-
+        if match_data['deaths'] != 0:
+            match_data['kda'] = "{:.2f}".format((match_data['kills'] + match_data['assists']) / match_data['deaths'])
+        else:
+            match_data['kda'] = "{:.2f}".format((match_data['kills'] + match_data['assists']) / 1)
     summoner_collection.update_one(
-        {'id': 'ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0'},
+        {'id': summoner_id},
         {'$set': {'match_history': player_data['match_history']}}
     )

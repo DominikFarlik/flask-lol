@@ -23,35 +23,75 @@ def get_players():
 # processing input from navbar input
 @app.route('/processInput/navbar', methods=['POST', 'GET'])
 def processInputNavbar():
-    input_data = request.form['userInput']
-    if input_data:
-        return redirect(url_for('summoner', summoner_name=input_data))
+    summoner_name = request.form['userInput']
+    if '#' not in summoner_name:
+        summoner_name = summoner_name + " #EUNE"
+    return redirect(url_for('summoner', summoner_name=summoner_name))
 
 
 # displaying data of specific summoner
 @app.route('/summoner/<summoner_name>')
 def summoner(summoner_name):
-    add_summoner_spell_names('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
-    add_kda('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
-    data = get_summoner_data_by_id('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
-    return render_template('summoner.html', data=data, errors={})
+    errors = {}
+    gameName, tagLine = summoner_name.split(' #')
+
+    endpoint = f"/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+    if error_by_region(endpoint):
+        errors['player_data_error'] = get_api_data_by_region(endpoint)
+    else:
+        api_data = get_api_data_by_region(endpoint)
+        print(api_data)
+        encryptedPUUID = api_data['puuid']
+
+        # getting summoner level and icon
+        endpoint = f"/lol/summoner/v4/summoners/by-puuid/{encryptedPUUID}"
+        if error(endpoint):
+            errors['player_data_error'] = get_api_data(endpoint)
+            pass
+        else:
+            api_data = get_api_data(endpoint)
+            print(api_data)
+            api_data['gameName'] = gameName
+            api_data['tagLine'] = tagLine
+            summoner_id = api_data['id']
+            update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
+
+            data = get_summoner_data_by_id(summoner_id)
+            match_history = data.get('match_history')
+            if match_history:
+                return render_template('summoner.html', data=data, errors={})
+            #else:
+                #return redirect(url_for('summonerUpdate', gameName=gameName, tagLine=tagLine))
 
 
 @app.route('/summoner/updated', methods=['POST', 'GET'])
-def summonerUpadte():
-    summoner_name = request.form['gameName']
+def summonerUpdate():
+    gameName = request.form['gameName']
+    tagLine = request.form['tagLine']
     errors = {}
     match_history_data = []
+    print(gameName, tagLine)
 
-    # getting summoner level and icon
-    endpoint = f"/lol/summoner/v4/summoners/by-name/{summoner_name}"
-    if error(endpoint):
-        errors['player_data_error'] = get_api_data(endpoint)
+    endpoint = f"/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+    if error_by_region(endpoint):
+        errors['player_data_error'] = get_api_data_by_region(endpoint)
     else:
-        api_data = get_api_data(endpoint)
-        api_data['gameName'] = summoner_name
-        summoner_id = api_data['id']
-        update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
+        api_data = get_api_data_by_region(endpoint)
+        print(api_data)
+        encryptedPUUID = api_data['puuid']
+
+        # getting summoner level and icon
+        endpoint = f"/lol/summoner/v4/summoners/by-puuid/{encryptedPUUID}"
+        if error(endpoint):
+            errors['player_data_error'] = get_api_data(endpoint)
+            pass
+        else:
+            api_data = get_api_data(endpoint)
+            print(api_data)
+            api_data['gameName'] = gameName
+
+            summoner_id = api_data['id']
+            update_or_add_document_by_id(api_data, summoner_id, 'summoner_collection')
 
         # getting information about player rank statistics
         endpoint = f"/lol/league/v4/entries/by-summoner/{api_data['id']}"
@@ -60,29 +100,27 @@ def summonerUpadte():
             pass
         else:
             split_and_save_ranked_data(get_api_data(endpoint))
-
             # getting player matches
             endpoint = f"/lol/match/v5/matches/by-puuid/{api_data['puuid']}/ids"
             if error_by_region(endpoint):
                 errors['match_history_error'] = get_api_data_by_region(endpoint)
             else:
                 data = get_api_data_by_region(endpoint)
-
                 # processing match data
                 for matchId in data:
                     match_history_data.append(get_api_data_by_region(f"/lol/match/v5/matches/{matchId}"))
-
                 match_history = []
-                # pick data to store
+                # pick data to store for current summoner
                 for i in match_history_data:
                     for j in i['info']['participants']:
                         if j['summonerId'] == summoner_id:
                             match_history.append(j)
-
                 update_or_add_document_by_id({'match_history': match_history}, summoner_id, "summoner_collection")
+                add_summoner_spell_names(summoner_id)
+                add_kda(summoner_id)
 
-    data = get_summoner_data_by_id('ux5iNhCX9pHOyOepp4914QwEq_iIJ2tioPhKGiDNhkWPKe0')
-    return render_template('summoner.html', data=data, errors=errors)
+    data = get_summoner_data_by_id(summoner_id)
+    return redirect(url_for('summoner', summoner_name=gameName + " #" + tagLine))
 
 
 # processing leaderboard update
