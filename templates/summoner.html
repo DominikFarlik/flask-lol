@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% block title %}Summoner{% endblock %}
 {% block body %}
-    {% if player_data_error %}
-        <span>{{ player_data_error }}</span><br>
+    {% if errors.player_data_error %}
+        <p>{{ errors.player_data_error }}</p>
     {% else %}
         <div class="horizontal-container">
             <div class="profile-icon-container">
@@ -11,8 +11,8 @@
             </div>
             <div class="header-vertical-container">
                 <span class="summoner-name-header">{{ data.gameName }}</span>
-                <form action="{{ url_for('summoner', summoner_name=summoner_name) }}" method="post">
-                    <button type="submit" class="update-button">Update</button>
+                <form action="/summoner/updated" method="post">
+                    <button type="submit" class="update-button" name="gameName" value="{{ data.gameName }}">Update</button>
                 </form>
             </div>
         </div>

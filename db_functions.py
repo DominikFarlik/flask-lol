@@ -110,6 +110,7 @@ def split_and_save_ranked_data(data):
 
 
 def change_summ_spell_id_to_name(summoner_id):
-    collection = dict(summoner_collection.find({}))
+    collection = summoner_collection.find({'id': summoner_id})
+    print(summoner_collection.find({'id': summoner_id}))
     for document in collection['match_history']:
         print(document['summoner1Id'])
