@@ -124,13 +124,14 @@ def add_summoner_spell_names(summoner_id):
     }
 
     for match_data in player_data.get('match_history', []):
-        summoner1_id = match_data.get('summoner1Id')
-        if summoner1_id in summoner_names:
-            match_data['summoner1Name'] = summoner_names[summoner1_id]
+        for match in match_data['info']['participants']:
+            summoner1_id = match.get('summoner1Id')
+            if summoner1_id in summoner_names:
+                match['summoner1Name'] = summoner_names[summoner1_id]
 
-        summoner2_id = match_data.get('summoner2Id')
-        if summoner2_id in summoner_names:
-            match_data['summoner2Name'] = summoner_names[summoner2_id]
+            summoner2_id = match.get('summoner2Id')
+            if summoner2_id in summoner_names:
+                match['summoner2Name'] = summoner_names[summoner2_id]
 
     summoner_collection.update_one(
         {'id': summoner_id},

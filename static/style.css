@@ -164,6 +164,10 @@ body {
     border: none;
 }
 
+.update-button:hover {
+    background-color: #1147bd;
+}
+
 .rank-container {
     display: flex;
     flex-direction: column;
@@ -196,6 +200,10 @@ body {
     width: 97%;
 }
 
+.match-history-row-win:hover {
+    background: #27bd27;
+}
+
 .match-history-row-lose {
     display: flex;
     flex-direction: row;
@@ -205,6 +213,10 @@ body {
     padding: 5px;
     margin: 2px;
     width: 97%;
+}
+
+.match-history-row-lose:hover {
+    background: #e11818;
 }
 
 .champion {

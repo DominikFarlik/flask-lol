@@ -1,4 +1,6 @@
 import time
+from datetime import datetime, timezone, timedelta
+from math import ceil
 
 
 def convert_epoch_to_duration(epoch):
@@ -13,6 +15,10 @@ def convert_epoch_to_duration(epoch):
     else:
         seconds = str(time_struct.tm_sec)
     return minutes + ":" + seconds
+
+
+def convert_epoch_to_date(epoch_time):
+    return datetime.fromtimestamp(epoch_time / 1000, timezone.utc).strftime('%d/%m/%Y')
 
 
 def calculate_winrate(wins, losses):

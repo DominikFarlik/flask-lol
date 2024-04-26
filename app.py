@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-from functions import convert_epoch_to_duration
+from functions import convert_epoch_to_duration, convert_epoch_to_date
 from api_functions import handle_api_call
 from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
                           get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names, add_kda)
@@ -24,7 +24,6 @@ def processInputNavbar():
 
 @app.route('/summoner/<summoner_name>/updated', methods=['POST', 'GET'])
 def update_summoner(summoner_name):
-    print("entered summoner update func")
     gameName, tagLine = summoner_name.split(' #')
     errors = {}
     puuid = ""
@@ -53,10 +52,8 @@ def update_summoner(summoner_name):
             rank_data, rank_error = handle_api_call(rank_endpoint, "server")
             if rank_error:
                 errors['rank_error'] = rank_error
-                print("rank error")
             else:
                 split_and_save_ranked_data(rank_data, puuid)
-                print("rank updated")
 
             # Retrieve match ids
             match_history_endpoint = f"/lol/match/v5/matches/by-puuid/{puuid}/ids"
@@ -71,17 +68,19 @@ def update_summoner(summoner_name):
                     match_data, match_error = handle_api_call(match_endpoint, "region")
                     if not match_error:
                         match_history_data.append(match_data)
+
                 # processing match data
                 if not match_history_data:
                     errors['match_history_error'] = "Matches not found"
                 else:
-                    match_history = [participant for match in match_history_data for participant in
-                                     match['info']['participants'] if participant['summonerId'] == summoner_id]
-                    update_or_add_document_by_puuid({'match_history': match_history}, puuid,
-                                                    "summoner_collection")
-                    print("match history updated")
+                    update_or_add_document_by_puuid({'match_history': match_history_data}, puuid, "summoner_collection")
+
+                    #match_history = [participant for match in match_history_data for participant in
+                    #                 match['info']['participants'] if participant['summonerId'] == summoner_id]
+                    #update_or_add_document_by_puuid({'match_history': match_history}, puuid,
+                    #                                "summoner_collection")
                     add_summoner_spell_names(summoner_id)
-                    add_kda(summoner_id)
+                    #add_kda(summoner_id)
 
     return redirect(url_for('summoner', summoner_name=summoner_name))
 
@@ -89,7 +88,6 @@ def update_summoner(summoner_name):
 # displaying data of specific summoner
 @app.route('/summoner/<summoner_name>', methods=['GET'])
 def summoner(summoner_name):
-    print("entered summoner function")
     gameName, tagLine = summoner_name.split(' #')
     errors = {}
 
@@ -105,7 +103,7 @@ def summoner(summoner_name):
         data = get_summoner_data_by_puuid(puuid)
         match_history = data.get('match_history')
         if match_history:
-            return render_template('summoner.html', data=data, errors={})
+            return render_template('summoner.html', data=data, errors={}, puuid=puuid)
         else:
             return redirect(url_for('update_summoner', summoner_name=gameName + " #" + tagLine))
 
