@@ -98,15 +98,16 @@ def get_summoner_data_by_puuid(puuid):
     return summoner_collection.find_one({'puuid': puuid})
 
 
-def split_and_save_ranked_data(data):
+def split_and_save_ranked_data(data, puuid):
+    print(data)
     for queue in data:
         if queue['queueType'] == 'RANKED_SOLO_5x5':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
-            update_or_add_document_by_puuid({'ranked_solo': queue}, queue['summonerId'], summoner_collection)
+            update_or_add_document_by_puuid({'ranked_solo': queue}, puuid, summoner_collection)
 
         elif queue['queueType'] == 'RANKED_FLEX_SR':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
-            update_or_add_document_by_puuid({'ranked_flex': queue}, queue['summonerId'], summoner_collection)
+            update_or_add_document_by_puuid({'ranked_flex': queue}, puuid, summoner_collection)
 
 
 def add_summoner_spell_names(summoner_id):
