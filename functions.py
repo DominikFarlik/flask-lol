@@ -1,6 +1,5 @@
 import time
-from datetime import datetime, timezone, timedelta
-from math import ceil
+from datetime import datetime, timezone
 
 
 def convert_epoch_to_duration(epoch):

@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from functions import convert_epoch_to_duration, convert_epoch_to_date
 from api_functions import handle_api_call
 from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
-                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names, add_kda)
+                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names)
 
 app = Flask(__name__)
 
@@ -26,7 +26,6 @@ def processInputNavbar():
 def update_summoner(summoner_name):
     gameName, tagLine = summoner_name.split(' #')
     errors = {}
-    puuid = ""
 
     # getting puuid
     account_endpoint = f"/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
@@ -74,13 +73,7 @@ def update_summoner(summoner_name):
                     errors['match_history_error'] = "Matches not found"
                 else:
                     update_or_add_document_by_puuid({'match_history': match_history_data}, puuid, "summoner_collection")
-
-                    #match_history = [participant for match in match_history_data for participant in
-                    #                 match['info']['participants'] if participant['summonerId'] == summoner_id]
-                    #update_or_add_document_by_puuid({'match_history': match_history}, puuid,
-                    #                                "summoner_collection")
                     add_summoner_spell_names(summoner_id)
-                    #add_kda(summoner_id)
 
     return redirect(url_for('summoner', summoner_name=summoner_name))
 
