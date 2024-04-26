@@ -22,7 +22,7 @@ def processInputNavbar():
     return redirect(url_for('summoner', summoner_name=summoner_name))
 
 
-@app.route('/summoner/<summoner_name>', methods=['POST'])
+@app.route('/summoner/<summoner_name>/updated', methods=['POST', 'GET'])
 def update_summoner(summoner_name):
     print("entered summoner update func")
     gameName, tagLine = summoner_name.split(' #')

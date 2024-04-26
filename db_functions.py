@@ -99,7 +99,6 @@ def get_summoner_data_by_puuid(puuid):
 
 
 def split_and_save_ranked_data(data, puuid):
-    print(data)
     for queue in data:
         if queue['queueType'] == 'RANKED_SOLO_5x5':
             queue['winrate'] = calculate_winrate(queue['wins'], queue['losses'])
