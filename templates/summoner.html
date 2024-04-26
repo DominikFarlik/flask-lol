@@ -54,6 +54,10 @@
                             {% else %}
                             <div class="match-history-row-lose">
                             {% endif %}
+                                <div class="first-column">
+                                    <div>{{ match.info.gameEndTimestamp }}</div>
+                                    <div>{{ match.info.gameDuration }}</div>
+                                </div>
                                 <div class="champion">
                                     <div class="champion-face">
                                         <img class="champion-img" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}" alt="{{ row.championName }}">

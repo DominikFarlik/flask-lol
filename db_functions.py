@@ -2,7 +2,7 @@ import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid
-from functions import calculate_winrate
+from functions import calculate_winrate, convert_epoch_to_duration, convert_epoch_to_date
 
 # mongoDB setup
 uri = ("mongodb+srv://dominikfarlik:Vej.5.syp.yke@cluster0.elmflqy.mongodb.net/flask_lol?retryWrites=true&w=majority"
@@ -124,6 +124,8 @@ def add_summoner_spell_names(summoner_id):
     }
 
     for match_data in player_data.get('match_history', []):
+        match_data['info']['gameEndTimestamp'] = convert_epoch_to_date(match_data['info']['gameEndTimestamp'])
+        match_data['info']['gameDuration'] = convert_epoch_to_duration(match_data['info']['gameDuration'])
         for match in match_data['info']['participants']:
             summoner1_id = match.get('summoner1Id')
             if summoner1_id in summoner_names:

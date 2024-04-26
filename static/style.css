@@ -195,7 +195,7 @@ body {
     border-radius: 5px;
     align-items: center;
     background: #198019;
-    padding: 5px;
+    padding: 7px;
     margin: 2px;
     width: 97%;
 }
@@ -210,7 +210,7 @@ body {
     border-radius: 5px;
     align-items: center;
     background: #8f0000;
-    padding: 5px;
+    padding: 7px;
     margin: 2px;
     width: 97%;
 }
@@ -219,9 +219,18 @@ body {
     background: #e11818;
 }
 
+.first-column {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    align-items: center;
+    margin-left: 5px;
+}
+
 .champion {
     position: relative;
     margin-right: 2px;
+    margin-left: 20px;
 }
 
 .champion-face {
