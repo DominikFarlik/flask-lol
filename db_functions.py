@@ -123,9 +123,17 @@ def add_summoner_spell_names(summoner_id):
         14: "SummonerDot"
     }
 
+    queues = {
+        440: "Ranked Flex",
+        420: "Ranked Solo"
+    }
+
     for match_data in player_data.get('match_history', []):
+
         match_data['info']['gameEndTimestamp'] = convert_epoch_to_date(match_data['info']['gameEndTimestamp'])
         match_data['info']['gameDuration'] = convert_epoch_to_duration(match_data['info']['gameDuration'])
+        match_data['info']['queueName'] = queues[match_data['info']['queueId']]
+
         for match in match_data['info']['participants']:
             summoner1_id = match.get('summoner1Id')
             if summoner1_id in summoner_names:
@@ -134,6 +142,12 @@ def add_summoner_spell_names(summoner_id):
             summoner2_id = match.get('summoner2Id')
             if summoner2_id in summoner_names:
                 match['summoner2Name'] = summoner_names[summoner2_id]
+
+            if match['deaths'] != 0:
+                match['kda'] = "{:.2f}".format(
+                    (match['kills'] + match['assists']) / match['deaths'])
+            else:
+                match['kda'] = "{:.2f}".format((match['kills'] + match['assists']) / 1)
 
     summoner_collection.update_one(
         {'id': summoner_id},

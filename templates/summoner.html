@@ -7,40 +7,45 @@
         <div class="horizontal-container">
             <div class="profile-icon-container">
                 <div class="level-header">{{ data.summonerLevel }}</div>
-                <img class="profile-icon-image" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
+                <img class="profile-icon-image"
+                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
             </div>
             <div class="header-vertical-container">
                 <span class="summoner-name-header">{{ data.gameName }} #{{ data.tagLine }}</span>
-                <form action="{{ url_for('update_summoner', summoner_name=data.gameName + ' #' + data.tagLine)  }}" method="post">
+                <form action="{{ url_for('update_summoner', summoner_name=data.gameName + ' #' + data.tagLine) }}"
+                      method="post">
                     <button type="submit" class="update-button">Update</button>
                 </form>
             </div>
         </div>
 
-    <div class="horizontal-container">
+        <div class="horizontal-container">
         <div class="vertical-container">
             {% if errors.rank_error %}
                 <p>{{ errors.rank_error }}</p>
             {% else %}
-            {% if data.ranked_solo %}
-                <div class="rank-container">
-                    <span>Ranked Solo</span>
-                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
-                    <span>{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
-                    <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L</span>
-                    <span>{{ data.ranked_solo.winrate }} % Win rate</span>
-                </div>
+                {% if data.ranked_solo %}
+                    <div class="rank-container">
+                        <span>Ranked Solo</span>
+                        <img style="width: 100px; height: 100px"
+                             src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
+                        <span>{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
+                        <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L</span>
+                        <span>{{ data.ranked_solo.winrate }} % Win rate</span>
+                    </div>
+                {% endif %}
+                {% if data.ranked_flex %}
+                    <div class="rank-container">
+                        <span>Ranked Flex</span>
+                        <img style="width: 100px; height: 100px"
+                             src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}"
+                             alt="data.ranked_flex.tier">
+                        <span>{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
+                        <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L</span>
+                        <span>{{ data.ranked_flex.winrate }} % Win rate</span>
+                    </div>
+                {% endif %}
             {% endif %}
-            {% if data.ranked_flex %}
-                <div class="rank-container">
-                    <span>Ranked Flex</span>
-                    <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}" alt="data.ranked_flex.tier">
-                    <span>{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
-                    <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L</span>
-                    <span>{{ data.ranked_flex.winrate }} % Win rate</span>
-                </div>
-            {% endif %}
-        {% endif %}
         </div>
         <div class="match-history">
             {% if errors.match_history_error %}
@@ -50,44 +55,78 @@
                     {% for row in match.info.participants %}
                         {% if row.puuid == puuid %}
                             {% if row.win %}
-                            <div class="match-history-row-win">
+                                <div class="match-history-row-win">
                             {% else %}
-                            <div class="match-history-row-lose">
+                                <div class="match-history-row-lose">
                             {% endif %}
-                                <div class="first-column">
-                                    <div>{{ match.info.gameEndTimestamp }}</div>
-                                    <div>{{ match.info.gameDuration }}</div>
+                        <div class="first-column">
+                            <div>{{ match.info.queueName }}</div>
+                            <div>{{ match.info.gameEndTimestamp }}</div>
+                            <div>{{ match.info.gameDuration }}</div>
+                        </div>
+                        <div class="champion">
+                            <div class="champion-face">
+                                <img class="champion-img"
+                                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}"
+                                     alt="{{ row.championName }}">
+                                <div class="champion-level">{{ row.champLevel }}</div>
+                            </div>
+                        </div>
+                        <div class="summoner-spells">
+                            <img class="summoner-spell"
+                                 src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner1Name)) }}"
+                                 alt="{{ row.summoner1Name }}">
+                            <img class="summoner-spell"
+                                 src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner2Name)) }}"
+                                 alt="{{ row.summoner2Name }}">
+                        </div>
+                        <div class="post-game-stats">
+                            <span class="main-stats">{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
+                            <span>{{ row.kda }} KDA</span>
+                            <span>{{ row.totalMinionsKilled + row.neutralMinionsKilled }} CS</span>
+                        </div>
+                        <div class="items">
+                            <div class="main-items">
+                                {% for item_num in range(6) %}
+                                {% if row['item{}'.format(item_num)] %}
+                                    <img class="item"
+                                         src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row['item{}'.format(item_num)])) }}"
+                                         alt="item">
+                                {% else %}
+                                    <div class="blank-item"></div>
+                                {% endif %}
+                            {% endfor %}
+                            </div>
+                            <div class="trinket">
+                                <img class="item"
+                                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item6)) }}"
+                                     alt="item">
+                            </div>
+                        </div>
+                        <div>
+                            <div class="players">
+                                <div class="team-list">
+                                    {% for participant in match.info.participants %}
+                                        {% if participant.teamId == 100 %}
+                                            <div class="player">{{ participant.riotIdGameName }}</div>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                                <div class="champion">
-                                    <div class="champion-face">
-                                        <img class="champion-img" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}" alt="{{ row.championName }}">
-                                        <div class="champion-level">{{ row.champLevel }}</div>
-                                    </div>
-                                </div>
-                                <div class="summoner-spells">
-                                    <img class="summoner-spell" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner1Name)) }}" alt="{{ row.summoner1Name }}">
-                                    <img class="summoner-spell" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner2Name)) }}" alt="{{ row.summoner2Name }}">
-                                </div>
-                                <div class="post-game-stats">
-                                    <span class="main-stats">{{ row.kills }}/{{ row.deaths }}/{{ row.assists }}</span>
-                                    <span>{{ row.kda }} KDA</span>
-                                <span>{{ row.totalMinionsKilled + row.neutralMinionsKilled}} CS</span>
-                                </div>
-                                <div class="items">
-                                    {% if row.item0 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item0)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item1 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item1)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item2 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item2)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item6 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item6)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item3 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item3)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item4 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item4)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
-                                    {% if row.item5 %} <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item5)) }}" alt="item"> {% else %} <div class="blank-item"></div> {% endif %}
+                                <div class="team-list">
+                                    {% for participant in match.info.participants %}
+                                        {% if participant.teamId == 200 %}
+                                            <div class="player">{{ participant.riotIdGameName }}</div>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
                             </div>
+                        </div>
+                        </div>
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
             {% endif %}
-        </div>
+            </div>
         </div>
     {% endif %}
 {% endblock %}
