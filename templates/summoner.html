@@ -26,21 +26,18 @@
             {% else %}
                 {% if data.ranked_solo %}
                     <div class="rank-container">
-                        <span>Ranked Solo</span>
-                        <img style="width: 100px; height: 100px"
-                             src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
-                        <span>{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
+                        <span class="rank-name">Ranked Solo</span>
+                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
+                        <span class="main-rank-stats">{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
                         <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L</span>
                         <span>{{ data.ranked_solo.winrate }} % Win rate</span>
                     </div>
                 {% endif %}
                 {% if data.ranked_flex %}
                     <div class="rank-container">
-                        <span>Ranked Flex</span>
-                        <img style="width: 100px; height: 100px"
-                             src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}"
-                             alt="data.ranked_flex.tier">
-                        <span>{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
+                        <span class="rank-name">Ranked Flex</span>
+                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}" alt="data.ranked_flex.tier">
+                        <span class="main-rank-stats">{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
                         <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L</span>
                         <span>{{ data.ranked_flex.winrate }} % Win rate</span>
                     </div>
@@ -89,18 +86,14 @@
                             <div class="main-items">
                                 {% for item_num in range(6) %}
                                 {% if row['item{}'.format(item_num)] %}
-                                    <img class="item"
-                                         src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row['item{}'.format(item_num)])) }}"
-                                         alt="item">
+                                    <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row['item{}'.format(item_num)])) }}" alt="item">
                                 {% else %}
                                     <div class="blank-item"></div>
                                 {% endif %}
                             {% endfor %}
                             </div>
                             <div class="trinket">
-                                <img class="item"
-                                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item6)) }}"
-                                     alt="item">
+                                <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item6)) }}" alt="item">
                             </div>
                         </div>
                         <div>
@@ -109,10 +102,8 @@
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 100 %}
                                             <div class="player">
-                                                <img class="player-champion"
-                                                    src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}"
-                                                    alt="item">
-                                                {{ participant.riotIdGameName }}
+                                                <img class="player-champion" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}" alt="item">
+                                                <a href="{{ url_for('summoner', summoner_name=participant.riotIdGameName + ' #' + participant.riotIdTagline) }}">{{ participant.riotIdGameName }}</a>
                                             </div>
                                         {% endif %}
                                     {% endfor %}
@@ -121,10 +112,8 @@
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 200 %}
                                             <div class="player">
-                                                <img class="player-champion"
-                                                    src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}"
-                                                    alt="item">
-                                                {{ participant.riotIdGameName }}
+                                                <img class="player-champion" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}" alt="item">
+                                                <a href="{{ url_for('summoner', summoner_name=participant.riotIdGameName + ' #' + participant.riotIdTagline) }}">{{ participant.riotIdGameName }}</a>
                                             </div>
                                         {% endif %}
                                     {% endfor %}

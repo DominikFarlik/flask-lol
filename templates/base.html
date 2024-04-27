@@ -29,6 +29,15 @@
     </div>
 </header>
 <body>
+<div class="background">
+    <div class="background-image">
+        <img class="" src="{{ url_for('static', filename='/dragontail-14.7.1/img/champion/centered/{}.jpg'.format("Ekko_19")) }}">
+    </div>
+    <div class="gradient-container">
+        <div class="gradient"></div>
+    </div>
+</div>
+
 <div class="content">
     {% block body %}
     {% endblock %}

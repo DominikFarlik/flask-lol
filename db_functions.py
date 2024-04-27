@@ -124,8 +124,13 @@ def add_summoner_spell_names(summoner_id):
     }
 
     queues = {
+        400: "Normal Draft",
+        420: "Ranked Solo",
         440: "Ranked Flex",
-        420: "Ranked Solo"
+        450: "ARAM",
+        700: "Clash",
+        1020: "One For All",
+        1900: "URF",
     }
 
     for match_data in player_data.get('match_history', []):
