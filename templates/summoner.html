@@ -108,14 +108,24 @@
                                 <div class="team-list">
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 100 %}
-                                            <div class="player">{{ participant.riotIdGameName }}</div>
+                                            <div class="player">
+                                                <img class="player-champion"
+                                                    src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}"
+                                                    alt="item">
+                                                {{ participant.riotIdGameName }}
+                                            </div>
                                         {% endif %}
                                     {% endfor %}
                                 </div>
                                 <div class="team-list">
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 200 %}
-                                            <div class="player">{{ participant.riotIdGameName }}</div>
+                                            <div class="player">
+                                                <img class="player-champion"
+                                                    src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}"
+                                                    alt="item">
+                                                {{ participant.riotIdGameName }}
+                                            </div>
                                         {% endif %}
                                     {% endfor %}
                                 </div>

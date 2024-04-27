@@ -323,7 +323,12 @@ body {
     display: flex;
     width: 194px;
     margin-left: 20px;
-    font-size: 10px;
+    font-size: 11px;
+}
+
+.player-champion {
+    height: 15px;
+    width: 15px;
 }
 
 .team-list {
