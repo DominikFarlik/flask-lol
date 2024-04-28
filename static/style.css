@@ -248,6 +248,7 @@ body {
     padding: 0 10px 10px;
     border-radius: 5px;
     gap: 2px;
+    margin-left: 10px;
 }
 
 .match-history-row-win {
@@ -458,11 +459,26 @@ body {
 }
 
 .leaderboard-column-name {
-    width: 30%;
+    width: 40%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     font-weight: 600;
+    padding-left: 6%;
+    a {
+        text-decoration: none;
+        outline: none;
+        color: #cddcfe;
+        cursor: pointer;
+        margin-left: 2px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    a:hover {
+        text-underline: white;
+        text-decoration: underline;
+    }
 }
 
 .leaderboard-row-element {

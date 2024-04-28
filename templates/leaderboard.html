@@ -23,7 +23,7 @@
             </div>
         {% for i in data %}
             <div class="leaderboard-row">
-            <div class="leaderboard-column-name">{{ loop.index }}. {{ i.gameName }} #{{ i.tagLine }}</div>
+                <div class="leaderboard-column-name">{{ loop.index }}. <a href="{{ url_for('summoner', summoner_name=i.gameName + ' #' + i.tagLine) }}">{{ i.gameName }} #{{ i.tagLine }}</a></div>
             <div class="leaderboard-row-element" style="color: #4650ff">{{ i.leaguePoints }}</div>
             <div class="leaderboard-row-element"><span style="color: #2ae72a">{{ i.wins }}</span>/<span style="color: #ff3737">{{ i.losses }}</span></div>
             <div class="leaderboard-row-element">{{ i.winrate }} %</div>
