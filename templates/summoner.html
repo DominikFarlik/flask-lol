@@ -4,7 +4,7 @@
     {% if errors.player_data_error %}
         <p>{{ errors.player_data_error }}</p>
     {% else %}
-        <div class="horizontal-container">
+        <div class="horizontal-header-container">
             <div class="profile-icon-container">
                 <div class="level-header">{{ data.summonerLevel }}</div>
                 <img class="profile-icon-image"
@@ -19,7 +19,7 @@
             </div>
         </div>
 
-        <div class="horizontal-container">
+        <div class="horizontal-body-container">
         <div class="vertical-container">
             {% if errors.rank_error %}
                 <p>{{ errors.rank_error }}</p>

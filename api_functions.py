@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "RGAPI-059a0d69-0b5c-400e-998e-619dec3a4dae"
+API_KEY = "RGAPI-c79d162c-39b7-4657-845b-549b38571d02"
 
 HEADERS = {"X-Riot-Token": API_KEY}
 

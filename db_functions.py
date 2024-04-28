@@ -172,3 +172,12 @@ def add_kda(summoner_id):
         {'id': summoner_id},
         {'$set': {'match_history': player_data['match_history']}}
     )
+
+
+def get_puuid_by_name_and_tag(name, tag):
+    player_data = summoner_collection.find_one(
+        {'gameName': {"$regex": name, "$options": "i"}, 'tagLine': {"$regex": tag, "$options": "i"}})
+    if player_data:
+        return player_data['puuid']
+    else:
+        return None

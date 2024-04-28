@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
-from functions import convert_epoch_to_duration, convert_epoch_to_date
 from api_functions import handle_api_call
 from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
-                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names)
+                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names, get_puuid_by_name_and_tag)
 
 app = Flask(__name__)
 
@@ -84,21 +83,24 @@ def summoner(summoner_name):
     gameName, tagLine = summoner_name.split(' #')
     errors = {}
 
-    account_endpoint = f"/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
-    account_data, account_error = handle_api_call(account_endpoint, "region")
+    puuid = get_puuid_by_name_and_tag(gameName, tagLine)
+    if not puuid:
+        account_endpoint = f"/riot/account/v1/accounts/by-riot-id/{gameName}/{tagLine}"
+        account_data, account_error = handle_api_call(account_endpoint, "region")
 
-    if account_error:
-        errors['player_data_error'] = account_error
-    elif account_data:
-        puuid = account_data['puuid']
-        update_or_add_document_by_puuid(account_data, puuid, 'summoner_collection')
-
-        data = get_summoner_data_by_puuid(puuid)
-        match_history = data.get('match_history')
-        if match_history:
-            return render_template('summoner.html', data=data, errors={}, puuid=puuid)
+        if account_error:
+            errors['player_data_error'] = account_error
+            return render_template('summoner.html', errors={})
         else:
-            return redirect(url_for('update_summoner', summoner_name=gameName + " #" + tagLine))
+            puuid = account_data['puuid']
+            update_or_add_document_by_puuid(account_data, puuid, 'summoner_collection')
+
+    data = get_summoner_data_by_puuid(puuid)
+    match_history = data.get('match_history')
+    if match_history:
+        return render_template('summoner.html', data=data, errors={}, puuid=puuid)
+    else:
+        return redirect(url_for('update_summoner', summoner_name=gameName + " #" + tagLine))
 
 
 # processing leaderboard update
