@@ -5,7 +5,7 @@
         <p>{{ error }}</p>
     {% else %}
         <div class="horizontal-header-container" style="justify-content: center">
-            <img style="width: 150px; height: 150px" src="{{ url_for('static', filename='dragontail-14.7.1/ranked-emblems/CHALLENGER.png') }}">
+            <img style="width: 150px; height: 150px" src="{{ url_for('static', filename='/ranked-emblems/CHALLENGER.png') }}">
             <div class="header-vertical-container" style="justify-content: center">
                 <h1>SoloQ leaderboard</h1>
                 <form action="/leaderboard" method="post" style="display: flex; justify-content: flex-end"><button type="submit" class="update-button">Update</button></form>

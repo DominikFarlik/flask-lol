@@ -7,8 +7,7 @@
         <div class="horizontal-header-container">
             <div class="profile-icon-container">
                 <div class="level-header">{{ data.summonerLevel }}</div>
-                <img class="profile-icon-image"
-                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/profileicon/{}.png'.format(data.profileIconId)) }}">
+                <img class="profile-icon-image" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/profileicon/{{ data.profileIconId }}.png">
             </div>
             <div class="header-vertical-container">
                 <span class="summoner-name-header">{{ data.gameName }} #{{ data.tagLine }}</span>
@@ -27,7 +26,7 @@
                 {% if data.ranked_solo %}
                     <div class="rank-container">
                         <span class="rank-name">Ranked Solo</span>
-                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
+                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/ranked-emblems/{}.png'.format(data.ranked_solo.tier)) }}">
                         <span class="main-rank-stats">{{ data.ranked_solo.tier }} {{ data.ranked_solo.rank }} {{ data.ranked_solo.leaguePoints }} LP </span>
                         <span>{{ data.ranked_solo.wins }} W  {{ data.ranked_solo.losses }} L</span>
                         <span>{{ data.ranked_solo.winrate }} % Win rate</span>
@@ -36,7 +35,7 @@
                 {% if data.ranked_flex %}
                     <div class="rank-container">
                         <span class="rank-name">Ranked Flex</span>
-                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/dragontail-14.7.1/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}" alt="data.ranked_flex.tier">
+                        <img style="width: 100px; height: 100px" src="{{ url_for('static', filename='/ranked-emblems/{}.png'.format(data.ranked_flex.tier)) }}" alt="data.ranked_flex.tier">
                         <span class="main-rank-stats">{{ data.ranked_flex.tier }} {{ data.ranked_flex.rank }} {{ data.ranked_flex.leaguePoints }} LP </span>
                         <span>{{ data.ranked_flex.wins }} W {{ data.ranked_flex.losses }} L</span>
                         <span>{{ data.ranked_flex.winrate }} % Win rate</span>
@@ -64,17 +63,17 @@
                         <div class="champion">
                             <div class="champion-face">
                                 <img class="champion-img"
-                                     src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(row.championName)) }}"
+                                     src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ row.championName }}.png"
                                      alt="{{ row.championName }}">
                                 <div class="champion-level">{{ row.champLevel }}</div>
                             </div>
                         </div>
                         <div class="summoner-spells">
                             <img class="summoner-spell"
-                                 src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner1Name)) }}"
+                                 src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/spell/{{ row.summoner1Name }}.png"
                                  alt="{{ row.summoner1Name }}">
                             <img class="summoner-spell"
-                                 src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/spell/{}.png'.format(row.summoner2Name)) }}"
+                                 src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/spell/{{ row.summoner2Name }}.png"
                                  alt="{{ row.summoner2Name }}">
                         </div>
                         <div class="post-game-stats">
@@ -86,14 +85,14 @@
                             <div class="main-items">
                                 {% for item_num in range(6) %}
                                 {% if row['item{}'.format(item_num)] %}
-                                    <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row['item{}'.format(item_num)])) }}" alt="item">
+                                    <img class="item" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/item/{{ row['item{}'.format(item_num)] }}.png" alt="item">
                                 {% else %}
                                     <div class="blank-item"></div>
                                 {% endif %}
                             {% endfor %}
                             </div>
                             <div class="trinket">
-                                <img class="item" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/item/{}.png'.format(row.item6)) }}" alt="item">
+                                <img class="item" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/item/{{ row.item6 }}.png" alt="item">
                             </div>
                         </div>
                         <div>
@@ -102,7 +101,7 @@
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 100 %}
                                             <div class="player">
-                                                <img class="player-champion" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}" alt="item">
+                                                <img class="player-champion" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ participant.championName }}.png" alt="item">
                                                 <a href="{{ url_for('summoner', summoner_name=participant.riotIdGameName + ' #' + participant.riotIdTagline) }}">{{ participant.riotIdGameName }}</a>
                                             </div>
                                         {% endif %}
@@ -112,7 +111,7 @@
                                     {% for participant in match.info.participants %}
                                         {% if participant.teamId == 200 %}
                                             <div class="player">
-                                                <img class="player-champion" src="{{ url_for('static', filename='/dragontail-14.7.1/14.7.1/img/champion/{}.png'.format(participant.championName)) }}" alt="item">
+                                                <img class="player-champion" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ participant.championName }}.png" alt="item">
                                                 <a href="{{ url_for('summoner', summoner_name=participant.riotIdGameName + ' #' + participant.riotIdTagline) }}">{{ participant.riotIdGameName }}</a>
                                             </div>
                                         {% endif %}
