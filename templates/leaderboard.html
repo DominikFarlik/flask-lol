@@ -4,17 +4,31 @@
     {% if error %}
         <p>{{ error }}</p>
     {% else %}
-        <h1>SoloQ leaderboard:</h1>
-        <form action="/leaderboard" method="post">
-            <button type="submit">Update</button>
-        </form>
-    {% for i in data %}
-        <div class="chall_container">
-            <span>{{ i.gameName }} #{{ i.tagLine }}</span>
-            <span>{{ i.leaguePoints }} LP</span>
-            <span>{{ i.wins }} W {{ i.losses }} L</span>
-            <span>{{ i.winrate }} %</span><br>
+        <div class="horizontal-header-container" style="justify-content: center">
+            <img style="width: 150px; height: 150px" src="{{ url_for('static', filename='dragontail-14.7.1/ranked-emblems/CHALLENGER.png') }}">
+            <div class="header-vertical-container" style="justify-content: center">
+                <h1>SoloQ leaderboard</h1>
+                <form action="/leaderboard" method="post" style="display: flex; justify-content: flex-end"><button type="submit" class="update-button">Update</button></form>
+            </div>
         </div>
-    {% endfor %}
+
+
+
+        <div class="leaderboard-container">
+            <div class="leaderboard-first-row">
+                <div class="leaderboard-column-name">Summoner name</div>
+                <div class="leaderboard-row-element" style="color: #1c24a2">LP</div>
+                <div class="leaderboard-row-element"><span style="color: #2ae72a">W </span>/<span style="color: #ff3737"> L</span></div>
+                <div class="leaderboard-row-element">Winrate</div>
+            </div>
+        {% for i in data %}
+            <div class="leaderboard-row">
+            <div class="leaderboard-column-name">{{ loop.index }}. {{ i.gameName }} #{{ i.tagLine }}</div>
+            <div class="leaderboard-row-element" style="color: #4650ff">{{ i.leaguePoints }}</div>
+            <div class="leaderboard-row-element"><span style="color: #2ae72a">{{ i.wins }}</span>/<span style="color: #ff3737">{{ i.losses }}</span></div>
+            <div class="leaderboard-row-element">{{ i.winrate }} %</div>
+        </div>
+        {% endfor %}
+        </div>
     {% endif %}
 {% endblock %}

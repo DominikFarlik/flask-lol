@@ -69,8 +69,9 @@ body {
 }
 
 .navbar-left {
-    width: 33%;
+    width: 30%;
     flex-wrap: nowrap;
+    margin-left: 8px;
 }
 
 .navbar-left {
@@ -255,7 +256,7 @@ body {
     border-radius: 5px;
     align-items: center;
     background: rgba(48, 255, 0, 0.29);
-    padding: 7px;
+    padding: 7px 10px;
     margin: 2px;
 }
 
@@ -269,7 +270,7 @@ body {
     border-radius: 5px;
     align-items: center;
     background: rgba(143, 0, 0, 0.45);
-    padding: 7px;
+    padding: 7px 10px;
     margin: 2px;
 }
 
@@ -422,12 +423,58 @@ body {
 }
 
 /*Leaderboard*/
-.chall_container {
+.leaderboard-container {
     display: flex;
+    flex-direction: column;
+    margin-left: 15%;
+    margin-right: 15%;
+    align-items: center;
     justify-content: space-between;
-    width: 50%;
+    gap: 5px;
+    border: 2px solid white;
+    border-radius: 5px;
 }
 
+.leaderboard-first-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-wrap: nowrap;
+    font-size: 23px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 5px;
+}
+
+.leaderboard-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+.leaderboard-column-name {
+    width: 30%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: 600;
+}
+
+.leaderboard-row-element {
+    display: flex;
+    justify-content: center;
+    width: 20%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* responsive css */
 @media screen and (max-width: 800px) {
     .vertical-container {
         display: flex;
