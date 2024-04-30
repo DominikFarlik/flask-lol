@@ -206,9 +206,9 @@ def add_matches_by_ids():
 
                 if match_error:
                     api_limit_exceeded = True
+                    print("api_limit_exceeded")
                     break
                 else:
-                    tierlist_collection.delete_one({'matches': match_id, 'summonerId': document['summonerId']})
                     for participant in match_data['info']['participants']:
                         if participant['summonerId'] == document['summonerId']:
                             given_player = {key: participant[key] for key in keys_to_keep}
@@ -229,6 +229,7 @@ def add_matches_by_ids():
                                                            'player1': given_player,
                                                            'player2': opponent_player})
 
+        tierlist_collection.delete_one({'summonerId': document['summonerId']})
 
 
 def calculate_winrate_of_champion():
@@ -276,3 +277,4 @@ def calculate_winrate_of_champion():
                 champion_winrates[champion_name][role] = {'winrate': round(win_rate, 2), 'matches': total_games}
 
     return champion_winrates
+

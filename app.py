@@ -143,18 +143,16 @@ def tierlist():
     if error_message:
         return render_template('leaderboard.html', error=error_message)
     else:
-        update_tierlist_element(api_data, 'summonerId', 'summonerId')
-        print("summonerIds updated")
-        update_tierlist_element(api_data, 'summonerId', 'tier')
-        print("tier updated")
-        add_missing_puuids("tierlist_collection")
-        print("puuids updated")
+        #update_tierlist_element(api_data, 'summonerId', 'summonerId')
+        #print("summonerIds updated")
+        #update_tierlist_element(api_data, 'summonerId', 'tier')
+        #print("tier updated")
+        #add_missing_puuids("tierlist_collection")
+        #print("puuids updated")
         #add_players_match_ids()
         #print("matchIds updated")
         add_matches_by_ids()
-        print("matches updated")
         winrates = calculate_winrate_of_champion()
-        print("winrates updated")
         #for champion, roles in winrates.items():
         #    for role, data in roles.items():
         #        print(f"{role} {champion}: {data['winrate']:.2f}% winrate ({data['matches']} matches)")
