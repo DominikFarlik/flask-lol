@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from api_functions import handle_api_call
 from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
-                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names, get_puuid_by_name_and_tag)
+                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names,
+                          get_puuid_by_name_and_tag, update_tierlist_element, add_missing_puuids, add_players_match_ids,
+                          add_matches_by_ids, calculate_winrate_of_champion)
 
 app = Flask(__name__)
 
@@ -129,6 +131,34 @@ def leaderboard():
     # local data from db
     data = sort_by_value('leaguePoints', "challengers")
     return render_template('leaderboard.html', data=data)
+
+
+@app.route('/tierlist')
+def tierlist():
+    queue = "RANKED_SOLO_5x5"
+    tier = "CHALLENGER"
+    division = "I"
+    leaderboard_endpoint = f"/lol/league-exp/v4/entries/{queue}/{tier}/{division}"
+    api_data, error_message = handle_api_call(leaderboard_endpoint, "server")
+    if error_message:
+        return render_template('leaderboard.html', error=error_message)
+    else:
+        update_tierlist_element(api_data, 'summonerId', 'summonerId')
+        print("summonerIds updated")
+        update_tierlist_element(api_data, 'summonerId', 'tier')
+        print("tier updated")
+        add_missing_puuids("tierlist_collection")
+        print("puuids updated")
+        add_players_match_ids()
+        print("matchIds updated")
+        add_matches_by_ids()
+        print("matches updated")
+        winrates = calculate_winrate_of_champion()
+        print("winrates updated")
+        for champion, roles in winrates.items():
+            for role, data in roles.items():
+                print(f"{role} {champion}: {data['winrate']:.2f}% winrate ({data['matches']} matches)")
+    return render_template('tierlist.html', data=winrates)
 
 
 if __name__ == '__main__':

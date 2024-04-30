@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='/dragontail-14.7.1/img/challenges-images/101106-DIAMOND.png') }}">
+    <link rel="icon" type="image/png" href="https://ddragon.leagueoflegends.com/cdn/img/challenges-images/101106-DIAMOND.png">
     <title>{% block title %}{% endblock %}</title>
 </head>
 <header>
@@ -17,6 +17,7 @@
         <div class="navbar-left">
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('leaderboard') }}">Leaderboard</a>
+            <a href="{{ url_for('tierlist') }}">Tier List</a>
         </div>
         <div class="navbar-middle">
             <form action="/processInput/navbar" method="post">
@@ -32,7 +33,7 @@
 <body>
 <div class="background">
     <div class="background-image">
-        <img class="" src="{{ url_for('static', filename='/dragontail-14.7.1/img/champion/centered/{}.jpg'.format("Ekko_19")) }}">
+        <img class="" src="https://ddragon.leagueoflegends.com/cdn/img/champion/centered/Ekko_19.jpg">
     </div>
     <div class="gradient-container">
         <div class="gradient"></div>

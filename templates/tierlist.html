@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
 {% block title %}Tier List{% endblock %}
 {% block body %}
-
+    <div class="tierlist-container">
+        <div class="tierlist-row">
+            <div class="tierlist-element">Role</div>
+            <div class="tierlist-element">Win Rate</div>
+            <div class="tierlist-element">Matches</div>
+        </div>
+        {% for champion, roles in winrates.items() %}
+            {% for role, data in roles.items() %}
+        <div class="tierlist-row">
+            <div class="tierlist-element">{{ data.role }}</div>
+            <div class="tierlist-element">{{ data.winrate }}</div>
+            <div class="tierlist-element">{{ data.matches }}</div>
+        </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 {% endblock %}

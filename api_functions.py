@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "RGAPI-c79d162c-39b7-4657-845b-549b38571d02"
+API_KEY = "RGAPI-00ec5a3a-8aee-4b0a-92b8-9dbff2dd6be3"
 
 HEADERS = {"X-Riot-Token": API_KEY}
 
@@ -78,5 +78,17 @@ def get_puuid_by_id(encryptedSummonerId):
     if response.status_code == 200:
         data = response.json()
         return data['puuid']
+    else:
+        return None
+
+
+def get_matches(puuid):
+    match_id_endpoint = f"/lol/match/v5/matches/by-puuid/{puuid}/ids"
+    url = EUROPE_CLUSTER_URL + match_id_endpoint
+    response = requests.get(url, headers=HEADERS)
+
+    if response.status_code == 200:
+        match_ids = response.json()
+        return match_ids
     else:
         return None
