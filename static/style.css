@@ -490,6 +490,22 @@ body {
     overflow: hidden;
 }
 
+/*Tier List*/
+
+.tierlist-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.tierlist-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.tierlist-element {
+    margin-left: 5px;
+}
+
 /* responsive css */
 @media screen and (max-width: 800px) {
     .vertical-container {

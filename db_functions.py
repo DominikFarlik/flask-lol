@@ -197,9 +197,10 @@ def add_matches_by_ids():
     api_limit_exceeded = False
 
     for document in tierlist_collection.find():
+        if api_limit_exceeded:
+            break
         for match_id in document['matches']:
             if matches_collection.find_one({'matchId': match_id}) is None:
-                print("adding match")
                 match_endpoint = f"/lol/match/v5/matches/{match_id}"
                 match_data, match_error = handle_api_call(match_endpoint, "region")
 
@@ -207,6 +208,7 @@ def add_matches_by_ids():
                     api_limit_exceeded = True
                     break
                 else:
+                    tierlist_collection.delete_one({'matches': match_id, 'summonerId': document['summonerId']})
                     for participant in match_data['info']['participants']:
                         if participant['summonerId'] == document['summonerId']:
                             given_player = {key: participant[key] for key in keys_to_keep}
@@ -219,14 +221,14 @@ def add_matches_by_ids():
                             break
 
                     if team_position != '':
+                        print(team_position)
                         if matches_collection.find_one({'matchId': match_id, 'teamPosition': team_position}) is None:
                             matches_collection.insert_one({'matchId': match_id,
                                                            'teamPosition': team_position,
                                                            'tier': document['tier'],
                                                            'player1': given_player,
                                                            'player2': opponent_player})
-        if api_limit_exceeded:
-            break
+
 
 
 def calculate_winrate_of_champion():
@@ -271,6 +273,6 @@ def calculate_winrate_of_champion():
                     win_rate = 0
 
                 # Save win rate for champion-role combination
-                champion_winrates[champion_name][role] = {'winrate': win_rate, 'matches': total_games}
+                champion_winrates[champion_name][role] = {'winrate': round(win_rate, 2), 'matches': total_games}
 
     return champion_winrates

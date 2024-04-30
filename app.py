@@ -149,16 +149,16 @@ def tierlist():
         print("tier updated")
         add_missing_puuids("tierlist_collection")
         print("puuids updated")
-        add_players_match_ids()
-        print("matchIds updated")
+        #add_players_match_ids()
+        #print("matchIds updated")
         add_matches_by_ids()
         print("matches updated")
         winrates = calculate_winrate_of_champion()
         print("winrates updated")
-        for champion, roles in winrates.items():
-            for role, data in roles.items():
-                print(f"{role} {champion}: {data['winrate']:.2f}% winrate ({data['matches']} matches)")
-    return render_template('tierlist.html', data=winrates)
+        #for champion, roles in winrates.items():
+        #    for role, data in roles.items():
+        #        print(f"{role} {champion}: {data['winrate']:.2f}% winrate ({data['matches']} matches)")
+    return render_template('tierlist.html', tierlist_data=winrates)
 
 
 if __name__ == '__main__':
