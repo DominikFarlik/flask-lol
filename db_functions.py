@@ -205,7 +205,9 @@ def add_matches_by_ids():
         tierlist_players_collection.delete_one({'summonerId': document['summonerId']})
 
 
-def get_tierlist_data_winrates():
+def get_tierlist_data_winrates(p_role):
+    if p_role == 'ALL':
+        p_role = 'TOP', 'JUNGLE', 'MID', 'BOTTOM', 'UTILITY'
     # Get all unique champion names
     unique_champions = set()
     cursor = tierlist_matches_collection.find({}, {"player1.championName": 1, "player2.championName": 1})
@@ -222,7 +224,7 @@ def get_tierlist_data_winrates():
         champion_winrates[champion_name] = {}
 
         # Iterate over roles
-        for role in ["TOP", "JUNGLE", "MIDDLE", "BOTTOM", "UTILITY"]:
+        for role in [p_role]:
             # Count total games played with the champion in the role
             total_games = tierlist_matches_collection.count_documents({
                 "$or": [
@@ -250,6 +252,17 @@ def get_tierlist_data_winrates():
                 champion_winrates[champion_name][role] = {'winrate': round(win_rate, 2), 'matches': total_games}
 
     return champion_winrates
+
+
+def sort_tierlist_data(data):
+    sorted_champion_winrates = {}
+
+    for champion, roles in data.items():
+        sorted_roles = {}
+        for role, stats in roles.items():
+            sorted_roles[role] = sorted(stats.items(), key=lambda x: x[1]['winrate'], reverse=True)
+        sorted_champion_winrates[champion] = sorted_roles
+    return sorted_champion_winrates
 
 
 def save_tierlist_data(data):

@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from api_functions import handle_api_call
 from db_functions import (save_leaderboard_data, sort_by_value, update_or_add_document_by_puuid,
                           get_summoner_data_by_puuid, split_and_save_ranked_data, add_queue_kda_spell_names_by_id,
-                          get_puuid_by_name_and_tag, get_tierlist_data_winrates,
-                          save_tierlist_data)
+                          get_puuid_by_name_and_tag, get_tierlist_data_winrates, save_tierlist_data, sort_tierlist_data)
 
 app = Flask(__name__)
 
@@ -123,9 +122,12 @@ def leaderboard():
     return render_template('leaderboard.html', data=data)
 
 
-@app.route('/tierlist')
+@app.route('/tierlist', methods=['GET', 'POST'])
 def tierlist():
-
+    if request.method == 'POST':
+        role = request.form['role']
+    else:
+        role = 'ALL'
     queue = "RANKED_SOLO_5x5"
     tier = "CHALLENGER"
     division = "I"
@@ -135,7 +137,9 @@ def tierlist():
         return render_template('leaderboard.html', error=error_message)
     else:
         save_tierlist_data(api_data)
-    return render_template('tierlist.html', tierlist_data=get_tierlist_data_winrates())
+        data = get_tierlist_data_winrates(role)
+        #sorted_data = sort_tierlist_data(data)
+    return render_template('tierlist.html', tierlist_data=data)
 
 
 if __name__ == '__main__':

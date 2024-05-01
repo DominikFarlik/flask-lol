@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}Tier List{% endblock %}
 {% block body %}
-    <form action="tierlist.html" method="post">
-        <button name="role" value="all">All</button>
-        <button name="role" value="top">Top</button>
-        <button name="role" value="jungle">Jungle</button>
-        <button name="role" value="middle">Mid</button>
-        <button name="role" value="bottom">Marksman</button>
-        <button name="role" value="utility">Support</button>
+    <form action="/tierlist" method="post">
+        <button type="submit" name="role" value="ALL">All</button>
+        <button type="submit" name="role" value="TOP">Top</button>
+        <button type="submit" name="role" value="JUNGLE">Jungle</button>
+        <button type="submit" name="role" value="MIDDLE">Mid</button>
+        <button type="submit" name="role" value="BOTTOM">Marksman</button>
+        <button type="submit" name="role" value="UTILITY">Support</button>
     </form>
 
     <div class="tierlist-container">

@@ -529,24 +529,23 @@ body {
 
 /* Scrollbar */
 body::-webkit-scrollbar {
-    width: 10px;
+    width: 7px;
 }
 
 /* Track */
 body::-webkit-scrollbar-track {
     background: #1d1d59;
     border-radius: 10px;
-    margin: 4px;
+    margin: 5px;
 }
 
 /* Handle */
 body::-webkit-scrollbar-thumb {
     background: #2828cc;
     border-radius: 10px;
-    border: 2px solid #1d1d59;
 }
 
 /* Handle on hover */
 body::-webkit-scrollbar-thumb:hover {
-  background: #2929b9;
+  background: #3a3aff;
 }
