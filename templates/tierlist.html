@@ -1,20 +1,29 @@
 {% extends 'base.html' %}
 {% block title %}Tier List{% endblock %}
 {% block body %}
-    <div class="leaderboard-container">
-        <div class="leaderboard-first-row">
-            <div class="leaderboard-row-element">Role</div>
-            <div class="leaderboard-row-element">Champion</div>
-            <div class="leaderboard-row-element">Win Rate</div>
-            <div class="leaderboard-row-element">Matches</div>
+    <form action="tierlist.html" method="post">
+        <button name="role" value="all">All</button>
+        <button name="role" value="top">Top</button>
+        <button name="role" value="jungle">Jungle</button>
+        <button name="role" value="middle">Mid</button>
+        <button name="role" value="bottom">Marksman</button>
+        <button name="role" value="utility">Support</button>
+    </form>
+
+    <div class="tierlist-container">
+        <div class="tierlist-row">
+            <div class="tierlist-element">Role</div>
+            <div class="tierlist-element">Champion</div>
+            <div class="tierlist-element">Win Rate</div>
+            <div class="tierlist-element">Matches</div>
         </div>
         {% for champion, roles in tierlist_data.items() %}
             {% for role, data in roles.items() %}
-        <div class="leaderboard-row">
-            <div class="leaderboard-row-element">{{ role }}</div>
-            <div class="leaderboard-row-element">{{ champion }}</div>
-            <div class="leaderboard-row-element">{{ data.winrate }}%</div>
-            <div class="leaderboard-row-element">{{ data.matches }}</div>
+        <div class="tierlist-row">
+            <div class="tierlist-element">{{ role }}</div>
+            <div class="tierlist-element">{{ champion }}</div>
+            <div class="tierlist-element">{{ data.winrate }}%</div>
+            <div class="tierlist-element">{{ data.matches }}</div>
         </div>
             {% endfor %}
         {% endfor %}

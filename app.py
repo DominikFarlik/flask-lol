@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from api_functions import handle_api_call
-from db_functions import (update_new_players, sort_by_value, update_or_add_document_by_puuid,
-                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_summoner_spell_names,
-                          get_puuid_by_name_and_tag, update_tierlist_element, add_missing_puuids, add_players_match_ids,
-                          add_matches_by_ids, calculate_winrate_of_champion)
+from db_functions import (save_leaderboard_data, sort_by_value, update_or_add_document_by_puuid,
+                          get_summoner_data_by_puuid, split_and_save_ranked_data, add_queue_kda_spell_names_by_id,
+                          get_puuid_by_name_and_tag, get_tierlist_data_winrates,
+                          save_tierlist_data)
 
 app = Flask(__name__)
 
@@ -74,7 +74,7 @@ def update_summoner(summoner_name):
                     errors['match_history_error'] = "Matches not found"
                 else:
                     update_or_add_document_by_puuid({'match_history': match_history_data}, puuid, "summoner_collection")
-                    add_summoner_spell_names(summoner_id)
+                    add_queue_kda_spell_names_by_id(summoner_id)
 
     return redirect(url_for('summoner', summoner_name=summoner_name))
 
@@ -105,27 +105,17 @@ def summoner(summoner_name):
         return redirect(url_for('update_summoner', summoner_name=gameName + " #" + tagLine))
 
 
-# processing leaderboard update
-@app.route('/processInput/leaderboardUpdate', methods=['POST', 'GET'])
-def processInputLeaderboard():
-    return redirect(url_for('leaderboard'))
-
-
 # just list of current challengers with additional data
 @app.route('/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
+    # loading new data from api
     if request.method == 'POST':
-        # loading new data from api
         queue = "RANKED_SOLO_5x5"
         leaderboard_endpoint = f"/lol/league/v4/challengerleagues/by-queue/{queue}"
         api_data, error_message = handle_api_call(leaderboard_endpoint, "server")
-        if error_message:
-            return render_template('leaderboard.html', error=error_message)
-        else:
-            entries = api_data['entries']
-            new_players_data = [{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in
-                                entries]
-            update_new_players(new_players_data)
+        if api_data:
+            save_leaderboard_data([{key: x[key] for key in ['summonerId', 'leaguePoints', 'wins', 'losses']} for x in
+                                   api_data['entries']])
             return redirect(url_for('leaderboard'))
 
     # local data from db
@@ -135,6 +125,7 @@ def leaderboard():
 
 @app.route('/tierlist')
 def tierlist():
+
     queue = "RANKED_SOLO_5x5"
     tier = "CHALLENGER"
     division = "I"
@@ -143,20 +134,8 @@ def tierlist():
     if error_message:
         return render_template('leaderboard.html', error=error_message)
     else:
-        #update_tierlist_element(api_data, 'summonerId', 'summonerId')
-        #print("summonerIds updated")
-        #update_tierlist_element(api_data, 'summonerId', 'tier')
-        #print("tier updated")
-        #add_missing_puuids("tierlist_collection")
-        #print("puuids updated")
-        #add_players_match_ids()
-        #print("matchIds updated")
-        add_matches_by_ids()
-        winrates = calculate_winrate_of_champion()
-        #for champion, roles in winrates.items():
-        #    for role, data in roles.items():
-        #        print(f"{role} {champion}: {data['winrate']:.2f}% winrate ({data['matches']} matches)")
-    return render_template('tierlist.html', tierlist_data=winrates)
+        save_tierlist_data(api_data)
+    return render_template('tierlist.html', tierlist_data=get_tierlist_data_winrates())
 
 
 if __name__ == '__main__':
