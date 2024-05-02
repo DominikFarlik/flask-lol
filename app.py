@@ -126,6 +126,7 @@ def leaderboard():
 def tierlist():
     if request.method == 'POST':
         role = request.form['role']
+        role = [role]
     else:
         role = 'ALL'
     queue = "RANKED_SOLO_5x5"
@@ -137,6 +138,7 @@ def tierlist():
         return render_template('leaderboard.html', error=error_message)
     else:
         save_tierlist_data(api_data)
+        print("Calculating win rates")
         data = get_tierlist_data_winrates(role)
         #sorted_data = sort_tierlist_data(data)
     return render_template('tierlist.html', tierlist_data=data)

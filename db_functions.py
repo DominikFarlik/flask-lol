@@ -9,7 +9,7 @@ uri = ("mongodb+srv://dominikfarlik:Vej.5.syp.yke@cluster0.elmflqy.mongodb.net/f
        "&appName=Cluster0")
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client["flask_lol"]
-challenger_collection = db["challengers"]
+leaderboard_collection = db["leaderboard"]
 summoner_collection = db["summoners"]
 tierlist_players_collection = db["tierlist_players"]
 tierlist_matches_collection = db["tierlist_matches"]
@@ -23,19 +23,23 @@ def find_documents_without_element(collection, element):
 def add_missing_puuids(collection):
     data_without_puuid = find_documents_without_element(collection, 'puuid')
     for document in data_without_puuid:
-        collection.update_one({'summonerId': document['summonerId']},
-                              {"$set": {"puuid": get_puuid_by_id(document['summonerId'])}})
+        puuid = get_puuid_by_id(document['summonerId'])
+        if puuid is not None:
+            collection.update_one({'summonerId': document['summonerId']},
+                                  {"$set": {"puuid": puuid}})
+        else:
+            break
 
 
 def add_missing_gameNames():
-    data_without_gameNames = find_documents_without_element(challenger_collection, 'gameName')
+    data_without_gameNames = find_documents_without_element(leaderboard_collection, 'gameName')
     for document in data_without_gameNames:
         game_and_tag = get_name_and_tagline_by_puuid(document['puuid'])
         if game_and_tag:
             gameName = game_and_tag['gameName']
             tagLine = game_and_tag['tagLine']
-            challenger_collection.update_one({'puuid': document['puuid']},
-                                             {"$set": {"gameName": gameName, "tagLine": tagLine}})
+            leaderboard_collection.update_one({'puuid': document['puuid']},
+                                              {"$set": {"gameName": gameName, "tagLine": tagLine}})
 
 
 def delete_old_documents(old_documents, new_documents, key, collection):
@@ -49,7 +53,7 @@ def delete_old_documents(old_documents, new_documents, key, collection):
 
 def sort_by_value(key, collection):
     if collection == "challengers":
-        return challenger_collection.find().sort(key, pymongo.DESCENDING)
+        return leaderboard_collection.find().sort(key, pymongo.DESCENDING)
 
 
 # Updating db data or if they are not in db, they are added
@@ -62,7 +66,7 @@ def update_or_add_data_by_value(data, key, collection):
 # Insert new document or update existing
 def update_or_add_document_by_puuid(data, puuid, collection):
     if collection == "challengers_collection":
-        collection = challenger_collection
+        collection = leaderboard_collection
     elif collection == "summoner_collection":
         collection = summoner_collection
     query = {'puuid': puuid}
@@ -172,22 +176,24 @@ def add_matches_by_ids():
     for document in tierlist_players_collection.find():
         if api_limit_exceeded:
             break
+
         for match_id in document['matches']:
-            if tierlist_matches_collection.find_one({'matchId': match_id}) is None:
-                match_endpoint = f"/lol/match/v5/matches/{match_id}"
-                match_data, match_error = handle_api_call(match_endpoint, "region")
+            match_endpoint = f"/lol/match/v5/matches/{match_id}"
+            match_data, match_error = handle_api_call(match_endpoint, "region")
 
-                if match_error:
-                    api_limit_exceeded = True
-                    print("api_limit_exceeded")
-                    break
-                else:
-                    for participant in match_data['info']['participants']:
-                        if participant['summonerId'] == document['summonerId']:
-                            given_player = {key: participant[key] for key in keys_to_keep}
-                            team_position = participant['teamPosition']
-                            break
+            if match_error:
+                api_limit_exceeded = True
+                print("Api limit exceeded")
+                break
 
+            else:
+                for participant in match_data['info']['participants']:
+                    if participant['summonerId'] == document['summonerId']:
+                        given_player = {key: participant[key] for key in keys_to_keep}
+                        team_position = participant['teamPosition']
+                        break
+
+                if tierlist_matches_collection.find_one({'matchId': match_id, 'teamPosition': team_position}) is None:
                     for participant in match_data['info']['participants']:
                         if participant['teamPosition'] == team_position and participant['win'] != given_player['win']:
                             opponent_player = {key: participant[key] for key in keys_to_keep}
@@ -201,13 +207,12 @@ def add_matches_by_ids():
                                                                     'tier': document['tier'],
                                                                     'player1': given_player,
                                                                     'player2': opponent_player})
-
         tierlist_players_collection.delete_one({'summonerId': document['summonerId']})
 
 
 def get_tierlist_data_winrates(p_role):
-    if p_role == 'ALL':
-        p_role = 'TOP', 'JUNGLE', 'MID', 'BOTTOM', 'UTILITY'
+    if p_role == ['ALL']:
+        p_role = ['TOP', 'JUNGLE', 'MID', 'BOTTOM', 'UTILITY']
     # Get all unique champion names
     unique_champions = set()
     cursor = tierlist_matches_collection.find({}, {"player1.championName": 1, "player2.championName": 1})
@@ -224,7 +229,7 @@ def get_tierlist_data_winrates(p_role):
         champion_winrates[champion_name] = {}
 
         # Iterate over roles
-        for role in [p_role]:
+        for role in p_role:
             # Count total games played with the champion in the role
             total_games = tierlist_matches_collection.count_documents({
                 "$or": [
@@ -266,16 +271,21 @@ def sort_tierlist_data(data):
 
 
 def save_tierlist_data(data):
+    print("Setting summonerIds")
     update_tierlist_element(data, 'summonerId', 'summonerId')
+    print("Setting player tiers")
     update_tierlist_element(data, 'summonerId', 'tier')
+    print("Fetching puuids")
     add_missing_puuids(tierlist_players_collection)
+    print("Fetching match Ids")
     add_players_match_ids()
+    print("Fetching match data")
     add_matches_by_ids()
 
 
 def save_leaderboard_data(new_players):
-    delete_old_documents(challenger_collection.find(), new_players, 'summonerId', challenger_collection)
-    update_or_add_data_by_value(new_players, 'summonerId', challenger_collection)
-    add_or_update_winrate_for_collection(challenger_collection)
-    add_missing_puuids(challenger_collection)
+    delete_old_documents(leaderboard_collection.find(), new_players, 'summonerId', leaderboard_collection)
+    update_or_add_data_by_value(new_players, 'summonerId', leaderboard_collection)
+    add_or_update_winrate_for_collection(leaderboard_collection)
+    add_missing_puuids(leaderboard_collection)
     add_missing_gameNames()
