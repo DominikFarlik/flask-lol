@@ -92,3 +92,12 @@ def get_matches(puuid):
         return match_ids
     else:
         return None
+
+
+def get_champion_from_json(champion):
+    url = f"https://ddragon.leagueoflegends.com/cdn/14.8.1/data/en_US/champion/{champion}.json"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        champion_data = response.json()
+        return champion_data["data"][champion]["name"]

@@ -1,7 +1,7 @@
 import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid, get_matches, handle_api_call
+from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid, get_matches, handle_api_call, get_champion_from_json
 from functions import calculate_winrate, convert_epoch_to_duration, convert_epoch_to_date
 
 # mongoDB setup
@@ -13,6 +13,7 @@ leaderboard_collection = db["leaderboard"]
 summoner_collection = db["summoners"]
 tierlist_players_collection = db["tierlist_players"]
 tierlist_matches_collection = db["tierlist_matches"]
+tierlist_final_collection = db["tierlist_final"]
 
 
 def find_documents_without_element(collection, element):
@@ -54,6 +55,8 @@ def delete_old_documents(old_documents, new_documents, key, collection):
 def sort_by_value(key, collection):
     if collection == "challengers":
         return leaderboard_collection.find().sort(key, pymongo.DESCENDING)
+    if collection == "tierlist_final":
+        return tierlist_final_collection.find().sort(key, pymongo.DESCENDING)
 
 
 # Updating db data or if they are not in db, they are added
@@ -193,7 +196,8 @@ def add_matches_by_ids():
                         team_position = participant['teamPosition']
                         break
 
-                if tierlist_matches_collection.find_one({'matchId': match_id, 'teamPosition': team_position}) is None:
+                if (tierlist_matches_collection.find_one({'matchId': match_id, 'teamPosition': team_position}) is None
+                        and given_player != {}):
                     for participant in match_data['info']['participants']:
                         if participant['teamPosition'] == team_position and participant['win'] != given_player['win']:
                             opponent_player = {key: participant[key] for key in keys_to_keep}
@@ -210,64 +214,52 @@ def add_matches_by_ids():
         tierlist_players_collection.delete_one({'summonerId': document['summonerId']})
 
 
-def get_tierlist_data_winrates(p_role):
-    if p_role == ['ALL']:
-        p_role = ['TOP', 'JUNGLE', 'MID', 'BOTTOM', 'UTILITY']
+def combine_tierlist_data_winrates():
     # Get all unique champion names
     unique_champions = set()
     cursor = tierlist_matches_collection.find({}, {"player1.championName": 1, "player2.championName": 1})
     for document in cursor:
         unique_champions.add(document["player1"]["championName"])
         unique_champions.add(document["player2"]["championName"])
-
     # Initialize dictionary to store win rates by champion-role
     champion_winrates = {}
-
     # Iterate over champion names
     for champion_name in unique_champions:
         # Initialize dictionary to store win rates by role
         champion_winrates[champion_name] = {}
-
         # Iterate over roles
-        for role in p_role:
+        for role in ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']:
             # Count total games played with the champion in the role
             total_games = tierlist_matches_collection.count_documents({
-                "$or": [
-                    {"player1.championName": champion_name, "teamPosition": role},
-                    {"player2.championName": champion_name, "teamPosition": role}
-                ]
-            })
-
+                "$or": [{"player1.championName": champion_name, "teamPosition": role},
+                        {"player2.championName": champion_name, "teamPosition": role}]})
             # Count wins with the champion in the role
-            wins = tierlist_matches_collection.count_documents({
-                "$or": [
-                    {"player1.championName": champion_name, "player1.win": True, "teamPosition": role},
-                    {"player2.championName": champion_name, "player2.win": True, "teamPosition": role}
-                ]
-            })
-
+            wins = tierlist_matches_collection.count_documents(
+                {"$or": [{"player1.championName": champion_name, "player1.win": True, "teamPosition": role},
+                         {"player2.championName": champion_name, "player2.win": True, "teamPosition": role}]})
             # Calculate win rate
             if total_games >= 10:  # Only consider roles with 10 or more games
                 if total_games > 0:
                     win_rate = (wins / total_games) * 100
                 else:
                     win_rate = 0
-
                 # Save win rate for champion-role combination
-                champion_winrates[champion_name][role] = {'winrate': round(win_rate, 2), 'matches': total_games}
+                tierlist_final_collection.update_one({'championName': champion_name},
+                                                     {'$set': {
+                                                         'championName': get_champion_from_json(champion_name),
+                                                         'championImg': champion_name,
+                                                         'role': role,
+                                                         'winrate': round(win_rate, 2),
+                                                         'matches': total_games}},
+                                                     upsert=True)
 
-    return champion_winrates
 
-
-def sort_tierlist_data(data):
-    sorted_champion_winrates = {}
-
-    for champion, roles in data.items():
-        sorted_roles = {}
-        for role, stats in roles.items():
-            sorted_roles[role] = sorted(stats.items(), key=lambda x: x[1]['winrate'], reverse=True)
-        sorted_champion_winrates[champion] = sorted_roles
-    return sorted_champion_winrates
+def pick_role_and_sort(role, key):
+    sorted_data = sort_by_value(key, "tierlist_final")
+    if role != 'ALL':
+        return [doc for doc in sorted_data if doc.get('role') == role]
+    else:
+        return sorted_data
 
 
 def save_tierlist_data(data):
@@ -281,6 +273,10 @@ def save_tierlist_data(data):
     add_players_match_ids()
     print("Fetching match data")
     add_matches_by_ids()
+    print("Calculating win rates")
+    combine_tierlist_data_winrates()
+    # only problem with its image ...
+    tierlist_final_collection.update_many({'championImg': "FiddleSticks"}, {'$set': {'championImg': "Fiddlesticks"}})
 
 
 def save_leaderboard_data(new_players):
