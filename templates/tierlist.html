@@ -22,8 +22,10 @@
     </form>
         {% for row in data %}
             <div class="tierlist-row">
-                <div class="tierlist-element">{{ loop.index }}.</div>
-                <div class="tierlist-element">{{ row.role }}</div>
+                <div class="tierlist-element">{{ loop.index }}</div>
+                <div class="tierlist-element">
+                    <img style="width: 22px; height: 22px" src="{{ url_for('static', filename='/positions/{}.png'.format(row.role)) }}">
+                </div>
                 <div class="tierlist-element">
                     <img class="summoner-spell" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ row.championImg }}.png">
                 </div>
