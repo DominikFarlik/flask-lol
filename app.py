@@ -128,6 +128,7 @@ def tierlist():
     role = 'ALL'
     sort_order = 'winrate'
     direction = -1
+    sort_tier = "CHALLENGER"
 
     if request.method == 'POST':
         if 'role' in request.form:
@@ -139,7 +140,7 @@ def tierlist():
             direction = int(request.form['previous_direction']) * -1
 
         if 'tier' in request.form:
-            tier = request.form['tier']
+            sort_tier = request.form['tier']
 
     queue = "RANKED_SOLO_5x5"
     tier = "CHALLENGER"
@@ -150,7 +151,7 @@ def tierlist():
         return render_template('leaderboard.html', error=error_message)
     else:
         #save_tierlist_data(api_data)
-        data = pick_role_and_sort(role, sort_order, direction)
+        data = pick_role_and_sort(role, sort_order, direction, sort_tier)
     return render_template('tierlist.html', data=data, previous_role=role, previous_direction=direction)
 
 

@@ -500,9 +500,9 @@ body {
 }
 
 .tierlist-header-roles {
-    margin: 20px;
+    margin: 20px 20px 20px 0;
     display: flex;
-    background: #070720;
+    background: #191937;
     padding: 5px;
     border-radius: 5px;
 }
@@ -514,7 +514,6 @@ body {
     display: inline-block;
     position: relative;
     margin: 3px;
-    background-color: #070720;
     border-radius: 3px;
 }
 
@@ -525,7 +524,7 @@ body {
     display: inline-block;
     position: relative;
     margin: 3px;
-    background-color: #27278a;
+    background-color: #191937;
     border-radius: 3px;
 }
 
@@ -543,14 +542,29 @@ body {
     left: 0;
 }
 
+.tier-select {
+    border: none;
+    border-radius: 3px;
+    padding: 5px;
+    background-color: #191937;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #c6a96d;
+    height: 41px;
+    margin: 20px;
+    display: flex;
+}
+
 .tierlist-container {
     display: flex;
     flex-direction: column;
     margin-left: 20%;
     margin-right: 20%;
-    background: rgba(7, 7, 32, 0.51);
-    border-radius: 10px;
+    background: #191937;
+    border-radius: 5px;
     padding: 10px;
+    gap: 5px;
 }
 
 .sort-button {
@@ -564,6 +578,9 @@ body {
 .tierlist-row {
     display: flex;
     flex-direction: row;
+    background-color: #11112a;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .tierlist-column-rank {

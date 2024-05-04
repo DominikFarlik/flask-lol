@@ -244,9 +244,10 @@ def combine_tierlist_data_winrates():
             wins = tierlist_matches_collection.count_documents(
                 {"$or": [{"player1.championName": champion_name, "player1.win": True, "teamPosition": role},
                          {"player2.championName": champion_name, "player2.win": True, "teamPosition": role}]})
-            # Calculate win rate
-            if total_games > 3:
+
+            if total_games >= 1:
                 win_rate = (wins / total_games) * 100
+
                 # this champion just have bad name format for api
                 if champion_name == "FiddleSticks":
                     champion_name = "Fiddlesticks"
@@ -261,8 +262,20 @@ def combine_tierlist_data_winrates():
                                                      upsert=True)
 
 
-def pick_role_and_sort(role, key, direction):
-    sorted_data = sort_by_value(key,"tierlist_final", direction)
+def add_pickrate():
+    matches = list(tierlist_matches_collection.aggregate([{"$group": {"_id": "$matchId", "count": {"$sum": 1}}}]))
+    low_pickrate = tierlist_final_collection.count_documents({"matches": {"$lt": 6}})
+
+    match_count = len(matches) - low_pickrate
+
+    for champion in tierlist_final_collection.find({}):
+        champion['pickrate'] = round((champion['matches'] / match_count) * 100 * 5, 2)
+        tierlist_final_collection.update_one({'role': champion['role'], 'championName': champion['championName']},
+                                             {'$set': champion})
+
+
+def pick_role_and_sort(role, key, direction, tier):
+    sorted_data = sort_by_value(key, "tierlist_final", direction)
     if role != 'ALL':
         return [doc for doc in sorted_data if doc.get('role') == role]
     else:
@@ -282,6 +295,8 @@ def save_tierlist_data(data):
     add_matches_by_ids()
     print("Calculating win rates")
     combine_tierlist_data_winrates()
+    print("Calculating pick rates")
+    add_pickrate()
 
 
 def save_leaderboard_data(new_players):
