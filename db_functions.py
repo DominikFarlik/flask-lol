@@ -1,7 +1,8 @@
 import pymongo
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid, get_matches, handle_api_call, get_champion_from_json
+from api_functions import get_puuid_by_id, get_name_and_tagline_by_puuid, get_matches, handle_api_call, \
+    get_champion_from_json
 from functions import calculate_winrate, convert_epoch_to_duration, convert_epoch_to_date
 
 # mongoDB setup
@@ -163,7 +164,9 @@ def update_tierlist_element(data, query, value):
 
 
 def add_players_match_ids():
-    data_without_matches = find_documents_without_element(tierlist_players_collection, 'matches')
+    data_without_matches = tierlist_players_collection.find({'puuid': {'$exists': True},
+                                                             '$or': [{'matches': {'$exists': False}},
+                                                                     {'matches': {"$exists": True, "$eq": None}}]})
     for document in data_without_matches:
         tierlist_players_collection.update_one({'summonerId': document['summonerId']},
                                                {"$set": {"matches": get_matches(document['puuid'])}})
@@ -229,6 +232,7 @@ def combine_tierlist_data_winrates():
         champion_winrates[champion_name] = {}
         # Iterate over roles
         for role in ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']:
+            print(champion_name, role)
             # Count total games played with the champion in the role
             total_games = tierlist_matches_collection.count_documents({
                 "$or": [{"player1.championName": champion_name, "teamPosition": role},
@@ -238,13 +242,13 @@ def combine_tierlist_data_winrates():
                 {"$or": [{"player1.championName": champion_name, "player1.win": True, "teamPosition": role},
                          {"player2.championName": champion_name, "player2.win": True, "teamPosition": role}]})
             # Calculate win rate
-            if total_games >= 10:  # Only consider roles with 10 or more games
-                if total_games > 0:
-                    win_rate = (wins / total_games) * 100
-                else:
-                    win_rate = 0
+            if total_games > 9:
+                win_rate = (wins / total_games) * 100
+                # this champion just have bad name format for api
+                if champion_name == "FiddleSticks":
+                    champion_name = "Fiddlesticks"
                 # Save win rate for champion-role combination
-                tierlist_final_collection.update_one({'championName': champion_name},
+                tierlist_final_collection.update_one({'championImg': champion_name},
                                                      {'$set': {
                                                          'championName': get_champion_from_json(champion_name),
                                                          'championImg': champion_name,
@@ -275,8 +279,6 @@ def save_tierlist_data(data):
     add_matches_by_ids()
     print("Calculating win rates")
     combine_tierlist_data_winrates()
-    # only problem with its image ...
-    tierlist_final_collection.update_many({'championImg': "FiddleSticks"}, {'$set': {'championImg': "Fiddlesticks"}})
 
 
 def save_leaderboard_data(new_players):

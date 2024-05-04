@@ -136,6 +136,9 @@ def tierlist():
             role = request.form['previous_role']
             sort_order = request.form['sort']
 
+        if 'tier' in request.form:
+            tier = request.form['tier']
+
     queue = "RANKED_SOLO_5x5"
     tier = "CHALLENGER"
     division = "I"
@@ -144,7 +147,7 @@ def tierlist():
     if error_message:
         return render_template('leaderboard.html', error=error_message)
     else:
-        # save_tierlist_data(api_data)
+        #save_tierlist_data(api_data)
         data = pick_role_and_sort(role, sort_order)
     return render_template('tierlist.html', data=data, previous_role=role)
 

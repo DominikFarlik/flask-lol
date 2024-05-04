@@ -1,37 +1,62 @@
 {% extends 'base.html' %}
 {% block title %}Tier List{% endblock %}
 {% block body %}
-    <form action="/tierlist" method="post">
-        <button type="submit" name="role" value="ALL">All</button>
-        <button type="submit" name="role" value="TOP">Top</button>
-        <button type="submit" name="role" value="JUNGLE">Jungle</button>
-        <button type="submit" name="role" value="MIDDLE">Mid</button>
-        <button type="submit" name="role" value="BOTTOM">Marksman</button>
-        <button type="submit" name="role" value="UTILITY">Support</button>
-    </form>
-
+    <div class="tierlist-header">
+        <form action="/tierlist" method="post">
+            <div class="tierlist-header-roles">
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/ALL.png') }}')">
+                    <button type="submit" name="role" value="ALL"></button>
+                </div>
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/TOP.png') }}')">
+                    <button type="submit" name="role" value="TOP"></button>
+                </div>
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/JUNGLE.png') }}')">
+                    <button type="submit" name="role" value="JUNGLE"></button>
+                </div>
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/MIDDLE.png') }}')">
+                    <button type="submit" name="role" value="MIDDLE"></button>
+                </div>
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/BOTTOM.png') }}')">
+                    <button type="submit" name="role" value="BOTTOM"></button>
+                </div>
+                <div class="role-button" style="background-image: url('{{ url_for('static', filename='/positions/UTILITY.png') }}')">
+                    <button type="submit" name="role" value="UTILITY"></button>
+                </div>
+            </div>
+        </form>
+        <form action="/tierlist" method="post">
+            <div class="tierlist-header-ranks">
+                <select name="tier" form="carform">
+                    <option value="CHALLENGER">Challenger</option>
+                    <option value="saab">Grandmaster</option>
+                    <option value="saab">master</option>
+                </select>
+            </div>
+        </form>
+    </div>
     <div class="tierlist-container">
     <form action="/tierlist" method="post">
         <div class="tierlist-row">
-            <div class="tierlist-element"><button type="submit" name="sort" value="role">Role</button></div>
-            <div class="tierlist-element"><button type="submit" name="sort" value="championName">Champion</button></div>
-            <div class="tierlist-element"><button type="submit" name="sort" value="winrate">Win Rate</button></div>
-            <div class="tierlist-element"><button type="submit" name="sort" value="matches">Matches</button></div>
+            <div class="tierlist-column-rank"><button class="sort-button">Rank</button></div>
+            <div class="tierlist-column-role"><button class="sort-button" type="submit" name="sort" value="role">Role</button></div>
+            <div class="tierlist-column-champion"><button class="sort-button" type="submit" name="sort" value="championName">Champion</button></div>
+            <div class="tierlist-column-winrate"><button class="sort-button" type="submit" name="sort" value="winrate">Win Rate</button></div>
+            <div class="tierlist-column-matches"><button class="sort-button" type="submit" name="sort" value="matches">Matches</button></div>
             <input type="hidden" name="previous_role" value="{{ previous_role }}">
         </div>
     </form>
         {% for row in data %}
             <div class="tierlist-row">
-                <div class="tierlist-element">{{ loop.index }}</div>
-                <div class="tierlist-element">
-                    <img style="width: 22px; height: 22px" src="{{ url_for('static', filename='/positions/{}.png'.format(row.role)) }}">
+                <div class="tierlist-column-rank">{{ loop.index }}</div>
+                <div class="tierlist-column-role">
+                    <img style="width: 30px; height: 30px" src="{{ url_for('static', filename='/positions/{}.png'.format(row.role)) }}">
                 </div>
-                <div class="tierlist-element">
-                    <img class="summoner-spell" src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ row.championImg }}.png">
+                <div class="tierlist-column-champion">
+                    <img style="width: 30px; height: 30px; border-radius: 3px   " src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ row.championImg }}.png">
+                    {{ row.championName }}
                 </div>
-                <div class="tierlist-element">{{ row.championName }}</div>
-                <div class="tierlist-element">{{ row.winrate }}%</div>
-                <div class="tierlist-element">{{ row.matches }}</div>
+                <div class="tierlist-column-winrate">{{ row.winrate }}%</div>
+                <div class="tierlist-column-matches">{{ row.matches }}</div>
             </div>
         {% endfor %}
     </div>
