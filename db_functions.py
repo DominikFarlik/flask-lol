@@ -53,11 +53,11 @@ def delete_old_documents(old_documents, new_documents, key, collection):
             collection.delete_one(query)
 
 
-def sort_by_value(key, collection):
+def sort_by_value(key, collection, direction):
     if collection == "challengers":
-        return leaderboard_collection.find().sort(key, pymongo.DESCENDING)
+        return leaderboard_collection.find().sort(key, direction)
     if collection == "tierlist_final":
-        return tierlist_final_collection.find().sort(key, pymongo.DESCENDING)
+        return tierlist_final_collection.find().sort(key, direction)
 
 
 # Updating db data or if they are not in db, they are added
@@ -111,7 +111,9 @@ def add_queue_kda_spell_names_by_id(summoner_id):
         7: "SummonerHeal",
         11: "SummonerSmite",
         12: "SummonerTeleport",
-        14: "SummonerDot"
+        14: "SummonerDot",
+        2201: "SummonerCherryFlash",
+        2202: "SummonerCherryHold",
     }
 
     queues = {
@@ -121,6 +123,7 @@ def add_queue_kda_spell_names_by_id(summoner_id):
         450: "ARAM",
         700: "Clash",
         1020: "One For All",
+        1700: "Arena",
         1900: "URF",
     }
 
@@ -242,7 +245,7 @@ def combine_tierlist_data_winrates():
                 {"$or": [{"player1.championName": champion_name, "player1.win": True, "teamPosition": role},
                          {"player2.championName": champion_name, "player2.win": True, "teamPosition": role}]})
             # Calculate win rate
-            if total_games > 9:
+            if total_games > 3:
                 win_rate = (wins / total_games) * 100
                 # this champion just have bad name format for api
                 if champion_name == "FiddleSticks":
@@ -258,8 +261,8 @@ def combine_tierlist_data_winrates():
                                                      upsert=True)
 
 
-def pick_role_and_sort(role, key):
-    sorted_data = sort_by_value(key, "tierlist_final")
+def pick_role_and_sort(role, key, direction):
+    sorted_data = sort_by_value(key,"tierlist_final", direction)
     if role != 'ALL':
         return [doc for doc in sorted_data if doc.get('role') == role]
     else:

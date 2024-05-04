@@ -43,6 +43,7 @@
             <div class="tierlist-column-winrate"><button class="sort-button" type="submit" name="sort" value="winrate">Win Rate</button></div>
             <div class="tierlist-column-matches"><button class="sort-button" type="submit" name="sort" value="matches">Matches</button></div>
             <input type="hidden" name="previous_role" value="{{ previous_role }}">
+            <input type="hidden" name="previous_direction" value="{{ previous_direction }}">
         </div>
     </form>
         {% for row in data %}

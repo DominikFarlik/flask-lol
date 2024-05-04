@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Summoner{% endblock %}
+{% block background_image %}<img class="" src="https://ddragon.leagueoflegends.com/cdn/img/champion/centered/Ekko_19.jpg">{% endblock %}
 {% block body %}
     {% if errors.player_data_error %}
         <p>{{ errors.player_data_error }}</p>
@@ -56,7 +57,7 @@
                                 <div class="match-history-row-lose">
                             {% endif %}
                         <div class="first-column">
-                            <div>{{ match.info.queueName }}</div>
+                            <div style="font-size: 13px; font-weight: 700">{{ match.info.queueName }}</div>
                             <div>{{ match.info.gameEndTimestamp }}</div>
                             <div>{{ match.info.gameDuration }}</div>
                         </div>

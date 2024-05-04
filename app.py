@@ -81,7 +81,7 @@ def update_summoner(summoner_name):
 # displaying data of specific summoner
 @app.route('/summoner/<summoner_name>', methods=['GET'])
 def summoner(summoner_name):
-    gameName, tagLine = summoner_name.split(' #')
+    gameName, tagLine = summoner_name.split('#')
     errors = {}
 
     puuid = get_puuid_by_name_and_tag(gameName, tagLine)
@@ -118,7 +118,7 @@ def leaderboard():
             return redirect(url_for('leaderboard'))
 
     # local data from db
-    data = sort_by_value('leaguePoints', "challengers")
+    data = sort_by_value('leaguePoints', -1, "challengers")
     return render_template('leaderboard.html', data=data)
 
 
@@ -127,6 +127,7 @@ def tierlist():
     # default values
     role = 'ALL'
     sort_order = 'winrate'
+    direction = -1
 
     if request.method == 'POST':
         if 'role' in request.form:
@@ -135,6 +136,7 @@ def tierlist():
         if 'sort' in request.form:
             role = request.form['previous_role']
             sort_order = request.form['sort']
+            direction = int(request.form['previous_direction']) * -1
 
         if 'tier' in request.form:
             tier = request.form['tier']
@@ -148,8 +150,8 @@ def tierlist():
         return render_template('leaderboard.html', error=error_message)
     else:
         #save_tierlist_data(api_data)
-        data = pick_role_and_sort(role, sort_order)
-    return render_template('tierlist.html', data=data, previous_role=role)
+        data = pick_role_and_sort(role, sort_order, direction)
+    return render_template('tierlist.html', data=data, previous_role=role, previous_direction=direction)
 
 
 if __name__ == '__main__':
