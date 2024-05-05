@@ -48,6 +48,7 @@
             <div class="tierlist-column-rank"><button class="sort-button">Rank</button></div>
             <div class="tierlist-column-role"><button class="sort-button" type="submit" name="sort" value="role">Role</button></div>
             <div class="tierlist-column-champion"><button class="sort-button" type="submit" name="sort" value="championName">Champion</button></div>
+            <div class="tierlist-column-winrate"><button class="sort-button" type="submit" name="sort" value="champion_tier">Tier</button></div>
             <div class="tierlist-column-winrate"><button class="sort-button" type="submit" name="sort" value="winrate">Win Rate</button></div>
             <div class="tierlist-column-winrate"><button class="sort-button" type="submit" name="sort" value="pickrate">Pick Rate</button></div>
             <div class="tierlist-column-matches"><button class="sort-button" type="submit" name="sort" value="matches">Matches</button></div>
@@ -65,6 +66,7 @@
                     <img style="width: 30px; height: 30px; border-radius: 3px   " src="https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/{{ row.championImg }}.png">
                     {{ row.championName }}
                 </div>
+                <div class="tierlist-column-winrate">{{ row.champion_tier }}</div>
                 <div class="tierlist-column-winrate">{{ row.winrate }}%</div>
                 <div class="tierlist-column-winrate">{{ row.pickrate }}%</div>
                 <div class="tierlist-column-matches">{{ row.matches }}</div>

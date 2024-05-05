@@ -118,7 +118,7 @@ def leaderboard():
             return redirect(url_for('leaderboard'))
 
     # local data from db
-    data = sort_by_value('leaguePoints', -1, "challengers")
+    data = sort_by_value('leaguePoints', "challengers", -1)
     return render_template('leaderboard.html', data=data)
 
 
@@ -143,7 +143,7 @@ def tierlist():
             sort_tier = request.form['tier']
 
     queue = "RANKED_SOLO_5x5"
-    tier = "CHALLENGER"
+    tier = "GRANDMASTER"
     division = "I"
     leaderboard_endpoint = f"/lol/league-exp/v4/entries/{queue}/{tier}/{division}"
     api_data, error_message = handle_api_call(leaderboard_endpoint, "server")

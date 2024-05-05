@@ -235,7 +235,6 @@ def combine_tierlist_data_winrates():
         champion_winrates[champion_name] = {}
         # Iterate over roles
         for role in ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY']:
-            print(champion_name, role)
             # Count total games played with the champion in the role
             total_games = tierlist_matches_collection.count_documents({
                 "$or": [{"player1.championName": champion_name, "teamPosition": role},
@@ -262,7 +261,7 @@ def combine_tierlist_data_winrates():
                                                      upsert=True)
 
 
-def add_pickrate():
+def add_pickrate_and_tier():
     matches = list(tierlist_matches_collection.aggregate([{"$group": {"_id": "$matchId", "count": {"$sum": 1}}}]))
     low_pickrate = tierlist_final_collection.count_documents({"matches": {"$lt": 6}})
 
@@ -270,6 +269,7 @@ def add_pickrate():
 
     for champion in tierlist_final_collection.find({}):
         champion['pickrate'] = round((champion['matches'] / match_count) * 100 * 5, 2)
+        champion['champion_tier'] = round((champion['pickrate']) * (champion['winrate'] * 2))
         tierlist_final_collection.update_one({'role': champion['role'], 'championName': champion['championName']},
                                              {'$set': champion})
 
@@ -277,9 +277,9 @@ def add_pickrate():
 def pick_role_and_sort(role, key, direction, tier):
     sorted_data = sort_by_value(key, "tierlist_final", direction)
     if role != 'ALL':
-        return [doc for doc in sorted_data if doc.get('role') == role]
+        return [doc for doc in sorted_data if doc.get('role') == role and doc.get('matches') > 5]
     else:
-        return sorted_data
+        return [doc for doc in sorted_data if doc.get('matches') > 5]
 
 
 def save_tierlist_data(data):
@@ -296,7 +296,7 @@ def save_tierlist_data(data):
     print("Calculating win rates")
     combine_tierlist_data_winrates()
     print("Calculating pick rates")
-    add_pickrate()
+    add_pickrate_and_tier()
 
 
 def save_leaderboard_data(new_players):
