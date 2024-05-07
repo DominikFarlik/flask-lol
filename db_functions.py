@@ -112,6 +112,7 @@ def add_queue_kda_spell_names_by_id(summoner_id):
         11: "SummonerSmite",
         12: "SummonerTeleport",
         14: "SummonerDot",
+        32: "SummonerSnowball",
         2201: "SummonerCherryFlash",
         2202: "SummonerCherryHold",
     }
@@ -269,7 +270,7 @@ def add_pickrate_and_tier():
 
     for champion in tierlist_final_collection.find({}):
         champion['pickrate'] = round((champion['matches'] / match_count) * 100 * 5, 2)
-        champion['champion_tier'] = round((champion['pickrate']) * (champion['winrate'] * 2))
+        champion['champion_tier'] = round(((champion['pickrate'] * 0.1) * (champion['winrate'])) / 10, 1)
         tierlist_final_collection.update_one({'role': champion['role'], 'championName': champion['championName']},
                                              {'$set': champion})
 

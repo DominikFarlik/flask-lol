@@ -143,7 +143,7 @@ def tierlist():
             sort_tier = request.form['tier']
 
     queue = "RANKED_SOLO_5x5"
-    tier = "GRANDMASTER"
+    tier = "DIAMOND"
     division = "I"
     leaderboard_endpoint = f"/lol/league-exp/v4/entries/{queue}/{tier}/{division}"
     api_data, error_message = handle_api_call(leaderboard_endpoint, "server")
