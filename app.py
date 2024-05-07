@@ -137,7 +137,8 @@ def tierlist():
         if 'sort' in request.form:
             role = request.form['previous_role']
             sort_order = request.form['sort']
-            direction = int(request.form['previous_direction']) * -1
+            if sort_order == request.form.get('previous_sort'):
+                direction = 1
 
         if 'tier' in request.form:
             sort_tier = request.form['tier']
@@ -152,7 +153,7 @@ def tierlist():
     else:
         #save_tierlist_data(api_data)
         data = pick_role_and_sort(role, sort_order, direction, sort_tier)
-    return render_template('tierlist.html', data=data, previous_role=role, previous_direction=direction)
+    return render_template('tierlist.html', data=data, previous_role=role, previous_sort=sort_order)
 
 
 if __name__ == '__main__':
